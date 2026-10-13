@@ -13,8 +13,7 @@ import {
 } from '../../models'
 import { useMatch } from '../../controllers/dataControllers'
 import { formatKickoff } from '../../lib/format'
-import { Colors, Radius } from '../../theme/colors'
-import { Type } from '../../theme/typography'
+import { Radius } from '../../theme/colors'
 import { Button } from '../../views/components/Button'
 import { Chip } from '../../views/components/Chip'
 import { ComparisonBar } from '../../views/components/ComparisonBar'
@@ -27,8 +26,12 @@ import { Skeleton } from '../../views/components/Skeleton'
 import { StateView } from '../../views/components/StateView'
 import { StatusPill } from '../../views/components/StatusPill'
 import { TeamCrest } from '../../views/components/TeamCrest'
+import { useTheme, useThemedStyles, useType } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 function Hero({ match }: { match: Match }) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const { homeTeam, awayTeam, score } = match
   return (
     <Animated.View entering={FadeInDown.duration(500)} style={styles.hero}>
@@ -64,12 +67,12 @@ function Hero({ match }: { match: Match }) {
       </View>
       <View style={styles.heroMeta}>
         <View style={styles.metaItem}>
-          <Ionicons name="calendar-outline" size={14} color={Colors.textMuted} />
+          <Ionicons name="calendar-outline" size={14} color={colors.textMuted} />
           <Text style={styles.metaText}>{formatKickoff(match.date)}</Text>
         </View>
         {match.venue ? (
           <View style={styles.metaItem}>
-            <Ionicons name="location-outline" size={14} color={Colors.textMuted} />
+            <Ionicons name="location-outline" size={14} color={colors.textMuted} />
             <Text style={styles.metaText} numberOfLines={1}>
               {match.venue}
             </Text>
@@ -81,6 +84,9 @@ function Hero({ match }: { match: Match }) {
 }
 
 function AiCard({ match }: { match: Match }) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
+  const type = useType()
   const { ai } = match
   const headline = ai.outcome
     ? ai.outcome === 'draw'
@@ -91,25 +97,28 @@ function AiCard({ match }: { match: Match }) {
   return (
     <Animated.View entering={FadeInDown.delay(120).springify().damping(18)} style={styles.card}>
       <View style={styles.cardHeader}>
-        <Ionicons name="sparkles" size={16} color={Colors.highlight} />
-        <Text style={Type.label}>Análisis de la IA</Text>
+        <Ionicons name="sparkles" size={16} color={colors.highlight} />
+        <Text style={type.label}>Análisis de la IA</Text>
       </View>
       <View style={styles.aiRow}>
         {ai.confidence !== null && <ConfidenceRing value={ai.confidence} size={92} label="CONFIANZA" />}
         <Text style={styles.aiHeadline}>{headline}</Text>
       </View>
-      {ai.analysis ? <Text style={Type.bodyMuted}>{ai.analysis}</Text> : null}
+      {ai.analysis ? <Text style={type.bodyMuted}>{ai.analysis}</Text> : null}
     </Animated.View>
   )
 }
 
 function ComparisonCard({ match }: { match: Match }) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
+  const type = useType()
   const { homeTeam, awayTeam } = match
   return (
     <Animated.View entering={FadeInDown.delay(220).springify().damping(18)} style={styles.card}>
       <View style={styles.cardHeader}>
-        <Ionicons name="stats-chart" size={16} color={Colors.primary} />
-        <Text style={Type.label}>Comparativa</Text>
+        <Ionicons name="stats-chart" size={16} color={colors.primary} />
+        <Text style={type.label}>Comparativa</Text>
       </View>
       <View style={styles.formRow}>
         <FormStrip form={homeTeam.form} />
@@ -129,6 +138,9 @@ function ComparisonCard({ match }: { match: Match }) {
 }
 
 export default function MatchDetailScreen() {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
+  const type = useType()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { data: match, loading, error, retry, saving, saveError, savePrediction } = useMatch(id)
@@ -157,7 +169,7 @@ export default function MatchDetailScreen() {
     <Screen edges={['top', 'bottom']}>
       <View style={styles.bar}>
         <Pressable hitSlop={12} onPress={() => router.back()} style={styles.back}>
-          <Ionicons name="chevron-back" size={22} color={Colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </Pressable>
         <Text style={styles.barTitle}>Detalle del partido</Text>
         <View style={styles.back} />
@@ -189,12 +201,12 @@ export default function MatchDetailScreen() {
 
           <Animated.View entering={FadeInDown.delay(320).springify().damping(18)} style={styles.card}>
             <View style={styles.cardHeader}>
-              <Ionicons name="locate" size={16} color={Colors.primary} />
-              <Text style={Type.label}>Tu pronóstico</Text>
+              <Ionicons name="locate" size={16} color={colors.primary} />
+              <Text style={type.label}>Tu pronóstico</Text>
             </View>
 
             {!open ? (
-              <Text style={Type.bodyMuted}>
+              <Text style={type.bodyMuted}>
                 {savedPick
                   ? `Pronosticaste: ${outcomeLabel(match, savedPick.outcome)} (${savedPick.confidence}% de confianza). Este partido ya no admite cambios.`
                   : 'Este partido ya no admite pronósticos.'}
@@ -232,63 +244,64 @@ export default function MatchDetailScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  back: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  barTitle: { color: Colors.text, fontSize: 16, fontWeight: '800' },
-  scroll: { padding: 20, paddingTop: 8, paddingBottom: 32, gap: 16 },
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    bar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+    back: {
+      width: 42,
+      height: 42,
+      borderRadius: 14,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    barTitle: { color: c.text, fontSize: 16, fontWeight: '800' },
+    scroll: { padding: 20, paddingTop: 8, paddingBottom: 32, gap: 16 },
 
-  hero: {
-    gap: 20,
-    padding: 18,
-    borderRadius: Radius.xl,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  league: { flex: 1, color: Colors.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.3 },
-  heroTeams: { flexDirection: 'row', alignItems: 'center' },
-  heroTeam: { flex: 1, alignItems: 'center', gap: 10 },
-  heroName: { color: Colors.text, fontSize: 15, fontWeight: '800', textAlign: 'center' },
-  heroCenter: { width: 84, alignItems: 'center' },
-  heroVs: { color: Colors.textFaint, fontSize: 18, fontWeight: '800', letterSpacing: 2 },
-  heroScore: { color: Colors.text, fontSize: 32, fontWeight: '800', letterSpacing: -1 },
-  heroMeta: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 16 },
-  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: '60%' },
-  metaText: { color: Colors.textMuted, fontSize: 12, fontWeight: '600' },
+    hero: {
+      gap: 20,
+      padding: 18,
+      borderRadius: Radius.xl,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+    league: { flex: 1, color: c.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.3 },
+    heroTeams: { flexDirection: 'row', alignItems: 'center' },
+    heroTeam: { flex: 1, alignItems: 'center', gap: 10 },
+    heroName: { color: c.text, fontSize: 15, fontWeight: '800', textAlign: 'center' },
+    heroCenter: { width: 84, alignItems: 'center' },
+    heroVs: { color: c.textFaint, fontSize: 18, fontWeight: '800', letterSpacing: 2 },
+    heroScore: { color: c.text, fontSize: 32, fontWeight: '800', letterSpacing: -1 },
+    heroMeta: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 16 },
+    metaItem: { flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: '60%' },
+    metaText: { color: c.textMuted, fontSize: 12, fontWeight: '600' },
 
-  card: {
-    gap: 16,
-    padding: 18,
-    borderRadius: Radius.lg,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  aiRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  aiHeadline: { flex: 1, color: Colors.text, fontSize: 17, fontWeight: '800', lineHeight: 23 },
+    card: {
+      gap: 16,
+      padding: 18,
+      borderRadius: Radius.lg,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    aiRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+    aiHeadline: { flex: 1, color: c.text, fontSize: 17, fontWeight: '800', lineHeight: 23 },
 
-  formRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  formLabel: { color: Colors.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.4 },
+    formRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    formLabel: { color: c.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.4 },
 
-  confidence: { gap: 10 },
-  confidenceLabel: { color: Colors.textMuted, fontSize: 13, fontWeight: '700' },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-})
+    confidence: { gap: 10 },
+    confidenceLabel: { color: c.textMuted, fontSize: 13, fontWeight: '700' },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  })
