@@ -5,11 +5,13 @@ import Animated, { FadeInDown } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '../../controllers/AuthContext'
 import { errorMessage } from '../../services/api'
-import { Colors } from '../../theme/colors'
 import { Button } from '../../views/components/Button'
 import { ErrorBanner } from '../../views/components/ErrorBanner'
 import { Screen } from '../../views/components/Screen'
 import { TextField } from '../../views/components/TextField'
+import { ThemeToggle } from '../../views/components/ThemeToggle'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface FieldErrors {
   username?: string
@@ -28,6 +30,8 @@ function validate(username: string, email: string, password: string): FieldError
 }
 
 export default function RegisterScreen() {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const { register } = useAuth()
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -66,10 +70,11 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View entering={FadeInDown.duration(450)}>
+          <Animated.View entering={FadeInDown.duration(450)} style={styles.topRow}>
             <Pressable hitSlop={12} onPress={() => router.back()} style={styles.back}>
-              <Ionicons name="chevron-back" size={22} color={Colors.text} />
+              <Ionicons name="chevron-back" size={22} color={colors.text} />
             </Pressable>
+            <ThemeToggle />
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(80).duration(500)} style={styles.heading}>
@@ -128,22 +133,24 @@ export default function RegisterScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  scroll: { flexGrow: 1, padding: 24, gap: 24 },
-  back: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heading: { gap: 6 },
-  title: { color: Colors.text, fontSize: 30, fontWeight: '800', letterSpacing: -0.8 },
-  subtitle: { color: Colors.textMuted, fontSize: 15, fontWeight: '500' },
-  form: { gap: 16 },
-  submit: { marginTop: 8 },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    flex: { flex: 1 },
+    scroll: { flexGrow: 1, padding: 24, gap: 24 },
+    topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    back: {
+      width: 42,
+      height: 42,
+      borderRadius: 14,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    heading: { gap: 6 },
+    title: { color: c.text, fontSize: 30, fontWeight: '800', letterSpacing: -0.8 },
+    subtitle: { color: c.textMuted, fontSize: 15, fontWeight: '500' },
+    form: { gap: 16 },
+    submit: { marginTop: 8 },
+  })
