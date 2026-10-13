@@ -2,15 +2,19 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import { useAuth } from '../../controllers/AuthContext'
 import { useLeaderboard } from '../../controllers/dataControllers'
-import { Colors, Radius } from '../../theme/colors'
-import { Type } from '../../theme/typography'
+import { Radius } from '../../theme/colors'
 import { Avatar } from '../../views/components/Avatar'
 import { Podium } from '../../views/components/Podium'
 import { Screen } from '../../views/components/Screen'
 import { Skeleton } from '../../views/components/Skeleton'
 import { StateView } from '../../views/components/StateView'
+import { useTheme, useThemedStyles, useType } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 export default function RankingScreen() {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
+  const type = useType()
   const { user } = useAuth()
   const { data, loading, refreshing, error, refresh, retry } = useLeaderboard()
   const rest = data?.slice(3) ?? []
@@ -21,12 +25,12 @@ export default function RankingScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={Colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.primary} />
         }
       >
         <View style={styles.heading}>
-          <Text style={Type.display}>Ranking</Text>
-          <Text style={Type.bodyMuted}>Los mejores pronosticadores de la comunidad.</Text>
+          <Text style={type.display}>Ranking</Text>
+          <Text style={type.bodyMuted}>Los mejores pronosticadores de la comunidad.</Text>
         </View>
 
         {loading && (
@@ -90,25 +94,26 @@ export default function RankingScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 32, gap: 24 },
-  heading: { gap: 4 },
-  skeletons: { gap: 12 },
-  list: { gap: 10 },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 12,
-    borderRadius: Radius.md,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  rowMe: { borderColor: Colors.primary, backgroundColor: Colors.primarySoft },
-  rank: { width: 26, textAlign: 'center', color: Colors.textMuted, fontSize: 15, fontWeight: '800' },
-  info: { flex: 1, gap: 2 },
-  name: { color: Colors.text, fontSize: 15, fontWeight: '700' },
-  meta: { color: Colors.textMuted, fontSize: 12, fontWeight: '600' },
-  points: { color: Colors.primary, fontSize: 17, fontWeight: '800' },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    scroll: { padding: 20, paddingBottom: 32, gap: 24 },
+    heading: { gap: 4 },
+    skeletons: { gap: 12 },
+    list: { gap: 10 },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      padding: 12,
+      borderRadius: Radius.md,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    rowMe: { borderColor: c.primary, backgroundColor: c.primarySoft },
+    rank: { width: 26, textAlign: 'center', color: c.textMuted, fontSize: 15, fontWeight: '800' },
+    info: { flex: 1, gap: 2 },
+    name: { color: c.text, fontSize: 15, fontWeight: '700' },
+    meta: { color: c.textMuted, fontSize: 12, fontWeight: '600' },
+    points: { color: c.primary, fontSize: 17, fontWeight: '800' },
+  })
