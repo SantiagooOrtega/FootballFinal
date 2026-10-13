@@ -4,8 +4,6 @@ import { useFocusEffect, useRouter } from 'expo-router'
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import { useAuth } from '../../controllers/AuthContext'
 import { useHome } from '../../controllers/dataControllers'
-import { Colors } from '../../theme/colors'
-import { Type } from '../../theme/typography'
 import { Avatar } from '../../views/components/Avatar'
 import { MatchCard } from '../../views/components/MatchCard'
 import { PredictionRow } from '../../views/components/PredictionRow'
@@ -14,8 +12,12 @@ import { SectionHeader } from '../../views/components/SectionHeader'
 import { Skeleton } from '../../views/components/Skeleton'
 import { StatCard } from '../../views/components/StatCard'
 import { StateView } from '../../views/components/StateView'
+import { ThemeToggle } from '../../views/components/ThemeToggle'
+import { useTheme, useType } from '../../theme/ThemeProvider'
 
 export default function HomeScreen() {
+  const { colors } = useTheme()
+  const type = useType()
   const router = useRouter()
   const { user, refreshUser } = useAuth()
   const { data, loading, refreshing, error, refresh, retry } = useHome()
@@ -38,17 +40,20 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={Colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.primary} />
         }
       >
         <Animated.View entering={FadeInDown.duration(500)} style={styles.header}>
           <View style={styles.greeting}>
-            <Text style={Type.bodyMuted}>Bienvenido de vuelta</Text>
-            <Text style={Type.title} numberOfLines={1}>
+            <Text style={type.bodyMuted}>Bienvenido de vuelta</Text>
+            <Text style={type.title} numberOfLines={1}>
               {user?.username ?? 'Jugador'}
             </Text>
           </View>
-          <Avatar name={user?.username ?? 'FB'} uri={user?.avatarUrl} size={46} />
+          <View style={styles.actions}>
+            <ThemeToggle />
+            <Avatar name={user?.username ?? 'FB'} uri={user?.avatarUrl} size={46} />
+          </View>
         </Animated.View>
 
         <View style={styles.stats}>
@@ -80,7 +85,7 @@ export default function HomeScreen() {
             <View style={styles.section}>
               <SectionHeader title="Hoy y mañana" />
               {data.today.length === 0 ? (
-                <Text style={Type.bodyMuted}>No hay partidos programados para hoy ni mañana.</Text>
+                <Text style={type.bodyMuted}>No hay partidos programados para hoy ni mañana.</Text>
               ) : (
                 <ScrollView
                   horizontal
@@ -123,7 +128,7 @@ export default function HomeScreen() {
                 onAction={() => router.navigate('/profile')}
               />
               {data.recent.length === 0 ? (
-                <Text style={Type.bodyMuted}>
+                <Text style={type.bodyMuted}>
                   Aún no has hecho pronósticos. Elige un partido y deja tu predicción.
                 </Text>
               ) : (
@@ -148,6 +153,7 @@ const styles = StyleSheet.create({
   scroll: { padding: 20, paddingBottom: 32, gap: 24 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   greeting: { flex: 1, gap: 2 },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   stats: { flexDirection: 'row', gap: 10 },
   section: { gap: 14 },
   carouselBleed: { marginHorizontal: -20 },

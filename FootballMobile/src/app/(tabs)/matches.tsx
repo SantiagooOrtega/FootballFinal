@@ -4,14 +4,13 @@ import { useRouter } from 'expo-router'
 import Animated, { FadeIn } from 'react-native-reanimated'
 import type { MatchStatus } from '../../models'
 import { useLeagues, useMatches } from '../../controllers/dataControllers'
-import { Colors } from '../../theme/colors'
-import { Type } from '../../theme/typography'
 import { Chip } from '../../views/components/Chip'
 import { MatchCard } from '../../views/components/MatchCard'
 import { Screen } from '../../views/components/Screen'
 import { SegmentedControl } from '../../views/components/SegmentedControl'
 import { Skeleton } from '../../views/components/Skeleton'
 import { StateView } from '../../views/components/StateView'
+import { useTheme, useType } from '../../theme/ThemeProvider'
 
 type StatusFilter = 'all' | MatchStatus
 
@@ -23,6 +22,8 @@ const STATUS_OPTIONS = [
 ] as const
 
 export default function MatchesScreen() {
+  const { colors } = useTheme()
+  const type = useType()
   const router = useRouter()
   const [status, setStatus] = useState<StatusFilter>('all')
   const [leagueId, setLeagueId] = useState<number | undefined>(undefined)
@@ -32,7 +33,7 @@ export default function MatchesScreen() {
   return (
     <Screen>
       <View style={styles.header}>
-        <Text style={Type.display}>Partidos</Text>
+        <Text style={type.display}>Partidos</Text>
         <SegmentedControl options={STATUS_OPTIONS} value={status} onChange={setStatus} />
         <ScrollView
           horizontal
@@ -77,7 +78,7 @@ export default function MatchesScreen() {
               <RefreshControl
                 refreshing={matches.refreshing}
                 onRefresh={matches.refresh}
-                tintColor={Colors.primary}
+                tintColor={colors.primary}
               />
             }
             ListEmptyComponent={
