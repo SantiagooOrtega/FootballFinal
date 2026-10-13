@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
-import { Colors, Radius } from '../../theme/colors'
+import { Radius } from '../../theme/colors'
 import { PressableScale } from './PressableScale'
+import { useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface SegmentedControlProps<T extends string> {
   options: readonly { value: T; label: string }[]
@@ -12,6 +14,7 @@ interface SegmentedControlProps<T extends string> {
 }
 
 export function SegmentedControl<T extends string>({ options, value, onChange }: SegmentedControlProps<T>) {
+  const styles = useThemedStyles(createStyles)
   const [width, setWidth] = useState(0)
   const segment = (width - 8) / options.length
   const index = Math.max(
@@ -53,24 +56,25 @@ export function SegmentedControl<T extends string>({ options, value, onChange }:
   )
 }
 
-const styles = StyleSheet.create({
-  track: {
-    flexDirection: 'row',
-    padding: 4,
-    borderRadius: Radius.md,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  thumb: {
-    position: 'absolute',
-    top: 4,
-    left: 4,
-    bottom: 4,
-    borderRadius: Radius.sm,
-    backgroundColor: Colors.primary,
-  },
-  segment: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
-  label: { color: Colors.textMuted, fontSize: 13, fontWeight: '700' },
-  labelActive: { color: Colors.onPrimary, fontWeight: '800' },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    track: {
+      flexDirection: 'row',
+      padding: 4,
+      borderRadius: Radius.md,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    thumb: {
+      position: 'absolute',
+      top: 4,
+      left: 4,
+      bottom: 4,
+      borderRadius: Radius.sm,
+      backgroundColor: c.primary,
+    },
+    segment: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
+    label: { color: c.textMuted, fontSize: 13, fontWeight: '700' },
+    labelActive: { color: c.onPrimary, fontWeight: '800' },
+  })
