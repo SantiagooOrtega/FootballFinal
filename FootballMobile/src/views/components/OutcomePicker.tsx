@@ -3,9 +3,11 @@ import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import type { Match, Outcome } from '../../models'
-import { Colors, Radius } from '../../theme/colors'
+import { Radius } from '../../theme/colors'
 import { PressableScale } from './PressableScale'
 import { TeamCrest } from './TeamCrest'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface OutcomePickerProps {
   match: Match
@@ -27,6 +29,8 @@ function Option({
   onPress: () => void
   children: React.ReactNode
 }) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const lift = useAnimatedStyle(() => ({
     transform: [{ translateY: withSpring(selected ? -4 : 0, { damping: 14, stiffness: 220 }) }],
   }))
@@ -47,7 +51,7 @@ function Option({
         </Text>
         {selected && (
           <View style={styles.check}>
-            <Ionicons name="checkmark" size={12} color={Colors.onPrimary} />
+            <Ionicons name="checkmark" size={12} color={colors.onPrimary} />
           </View>
         )}
       </PressableScale>
@@ -56,6 +60,8 @@ function Option({
 }
 
 export function OutcomePicker({ match, value, onChange, disabled }: OutcomePickerProps) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   return (
     <View style={styles.row}>
       <Option
@@ -68,7 +74,7 @@ export function OutcomePicker({ match, value, onChange, disabled }: OutcomePicke
       </Option>
       <Option title="Empate" selected={value === 'draw'} disabled={disabled} onPress={() => onChange('draw')}>
         <View style={styles.drawIcon}>
-          <Ionicons name="swap-horizontal" size={22} color={Colors.draw} />
+          <Ionicons name="swap-horizontal" size={22} color={colors.draw} />
         </View>
       </Option>
       <Option
@@ -83,39 +89,40 @@ export function OutcomePicker({ match, value, onChange, disabled }: OutcomePicke
   )
 }
 
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 10 },
-  optionWrap: { flex: 1 },
-  option: {
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 16,
-    borderRadius: Radius.lg,
-    backgroundColor: Colors.surfaceHigh,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  optionSelected: { borderColor: Colors.primary, backgroundColor: Colors.primarySoft },
-  optionDisabled: { opacity: 0.5 },
-  title: { color: Colors.textMuted, fontSize: 13, fontWeight: '800' },
-  titleSelected: { color: Colors.primary },
-  drawIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.drawSoft,
-  },
-  check: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    row: { flexDirection: 'row', gap: 10 },
+    optionWrap: { flex: 1 },
+    option: {
+      alignItems: 'center',
+      gap: 10,
+      paddingVertical: 16,
+      borderRadius: Radius.lg,
+      backgroundColor: c.surfaceHigh,
+      borderWidth: 1.5,
+      borderColor: c.border,
+    },
+    optionSelected: { borderColor: c.primary, backgroundColor: c.primarySoft },
+    optionDisabled: { opacity: 0.5 },
+    title: { color: c.textMuted, fontSize: 13, fontWeight: '800' },
+    titleSelected: { color: c.primary },
+    drawIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: c.drawSoft,
+    },
+    check: {
+      position: 'absolute',
+      top: 8,
+      right: 8,
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: c.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  })
