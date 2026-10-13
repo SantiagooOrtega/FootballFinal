@@ -1,8 +1,9 @@
 import { StyleSheet, Text } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Image } from 'expo-image'
-import { Colors } from '../../theme/colors'
 import { initials } from '../../lib/format'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface AvatarProps {
   name: string
@@ -11,13 +12,15 @@ interface AvatarProps {
 }
 
 export function Avatar({ name, uri, size = 44 }: AvatarProps) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const box = { width: size, height: size, borderRadius: size / 2 }
 
   if (uri) return <Image source={uri} style={box} contentFit="cover" />
 
   return (
     <LinearGradient
-      colors={[Colors.primary, Colors.primaryStrong]}
+      colors={[colors.primary, colors.primaryStrong]}
       style={[styles.base, box]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -27,7 +30,8 @@ export function Avatar({ name, uri, size = 44 }: AvatarProps) {
   )
 }
 
-const styles = StyleSheet.create({
-  base: { alignItems: 'center', justifyContent: 'center' },
-  text: { color: Colors.onPrimary, fontWeight: '800' },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    base: { alignItems: 'center', justifyContent: 'center' },
+    text: { color: c.onPrimary, fontWeight: '800' },
+  })

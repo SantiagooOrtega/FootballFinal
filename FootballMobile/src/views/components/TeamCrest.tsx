@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
-import { Colors } from '../../theme/colors'
+import { useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface TeamCrestProps {
   logo: string | null
@@ -11,6 +12,7 @@ interface TeamCrestProps {
 
 /** Escudo del equipo; si la imagen no carga, muestra un monograma. */
 export function TeamCrest({ logo, name, size = 48 }: TeamCrestProps) {
+  const styles = useThemedStyles(createStyles)
   const [failed, setFailed] = useState(false)
   const box = { width: size, height: size, borderRadius: size / 2 }
 
@@ -35,18 +37,19 @@ export function TeamCrest({ logo, name, size = 48 }: TeamCrestProps) {
   )
 }
 
-const styles = StyleSheet.create({
-  frame: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F4F8F5',
-  },
-  fallback: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.surfaceHigh,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-  },
-  initials: { color: Colors.text, fontWeight: '800', letterSpacing: 0.5 },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    frame: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#F4F8F5',
+    },
+    fallback: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: c.surfaceHigh,
+      borderWidth: 1,
+      borderColor: c.borderStrong,
+    },
+    initials: { color: c.text, fontWeight: '800', letterSpacing: 0.5 },
+  })

@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import Svg, { Circle } from 'react-native-svg'
-import { Colors } from '../../theme/colors'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
@@ -25,8 +26,10 @@ export function ConfidenceRing({
   size = 96,
   stroke = 9,
   label,
-  color = Colors.primary,
+  color,
 }: ConfidenceRingProps) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const radius = (size - stroke) / 2
   const circumference = 2 * Math.PI * radius
   const progress = useSharedValue(0)
@@ -52,7 +55,7 @@ export function ConfidenceRing({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={Colors.border}
+          stroke={colors.border}
           strokeWidth={stroke}
           fill="none"
         />
@@ -60,7 +63,7 @@ export function ConfidenceRing({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={color}
+          stroke={color ?? colors.primary}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -76,9 +79,10 @@ export function ConfidenceRing({
   )
 }
 
-const styles = StyleSheet.create({
-  rotated: { transform: [{ rotate: '-90deg' }] },
-  center: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center' },
-  value: { color: Colors.text, fontWeight: '800', letterSpacing: -0.5 },
-  label: { color: Colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.6, marginTop: 1 },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    rotated: { transform: [{ rotate: '-90deg' }] },
+    center: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center' },
+    value: { color: c.text, fontWeight: '800', letterSpacing: -0.5 },
+    label: { color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.6, marginTop: 1 },
+  })
