@@ -58,7 +58,7 @@ npm run db:seed
 npm run dev
 ```
 
-El servidor corre en: `http://localhost:5000`
+El servidor corre en: `http://localhost:5001`
 
 ### 2. Frontend
 
@@ -69,6 +69,26 @@ npm run dev
 ```
 
 El cliente corre en: `http://localhost:5173`
+
+### 3. App móvil (Expo Go)
+
+```bash
+cd FootballMobile
+npm install --legacy-peer-deps
+npx expo start
+```
+
+Escanea el QR con Expo Go. El celular y la computadora deben estar en la misma red:
+la app toma la IP del servidor automáticamente desde Metro (puerto 5001).
+Para apuntar a otra URL define `EXPO_PUBLIC_API_URL`, por ejemplo `http://192.168.1.10:5001/api`.
+
+Arquitectura MVC de la app (`FootballMobile/src`):
+
+| Capa | Carpeta | Contenido |
+|------|---------|-----------|
+| Model | `models/`, `services/` | Entidades tipadas, mappers y repositorios HTTP, sesión JWT en SecureStore |
+| Controller | `controllers/` | `AuthContext` y hooks de datos (`useHome`, `useMatch`, `useLeaderboard`...) |
+| View | `app/`, `views/components/` | Pantallas Expo Router y componentes de UI animados |
 
 ## Credenciales de prueba
 
