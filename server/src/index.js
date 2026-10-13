@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user.routes');
 const leagueRoutes = require('./routes/league.routes');
 
 const { errorHandler } = require('./middleware/error.middleware');
+const SchedulerService = require('./services/scheduler.service');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,6 +70,7 @@ app.listen(PORT, () => {
   console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
   console.log(`🌍 Entorno: ${process.env.NODE_ENV}`);
   console.log(`─────────────────────────────────────────\n`);
+  SchedulerService.start();
 });
 
 module.exports = app;
