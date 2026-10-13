@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import type { MatchStatus } from '../../models'
-import { Colors } from '../../theme/colors'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 const LABELS: Record<MatchStatus, string> = {
   scheduled: 'PROGRAMADO',
@@ -19,6 +20,7 @@ const LABELS: Record<MatchStatus, string> = {
 }
 
 function LiveDot() {
+  const styles = useThemedStyles(createStyles)
   const opacity = useSharedValue(1)
   useEffect(() => {
     opacity.value = withRepeat(
@@ -31,6 +33,8 @@ function LiveDot() {
 }
 
 export function StatusPill({ status }: { status: MatchStatus }) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const live = status === 'live'
   const finished = status === 'finished'
   const warning = status === 'postponed' || status === 'cancelled'
@@ -48,9 +52,9 @@ export function StatusPill({ status }: { status: MatchStatus }) {
       <Text
         style={[
           styles.text,
-          live && { color: Colors.loss },
-          warning && { color: Colors.draw },
-          status === 'scheduled' && { color: Colors.textMuted },
+          live && { color: colors.loss },
+          warning && { color: colors.draw },
+          status === 'scheduled' && { color: colors.textMuted },
         ]}
       >
         {LABELS[status]}
@@ -59,19 +63,20 @@ export function StatusPill({ status }: { status: MatchStatus }) {
   )
 }
 
-const styles = StyleSheet.create({
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: Colors.surfaceHigh,
-  },
-  live: { backgroundColor: Colors.lossSoft },
-  finished: { backgroundColor: Colors.primarySoft },
-  warning: { backgroundColor: Colors.drawSoft },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.loss },
-  text: { fontSize: 10, fontWeight: '800', letterSpacing: 0.8, color: Colors.primary },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    pill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 9,
+      paddingVertical: 4,
+      borderRadius: 8,
+      backgroundColor: c.surfaceHigh,
+    },
+    live: { backgroundColor: c.lossSoft },
+    finished: { backgroundColor: c.primarySoft },
+    warning: { backgroundColor: c.drawSoft },
+    dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.loss },
+    text: { fontSize: 10, fontWeight: '800', letterSpacing: 0.8, color: c.primary },
+  })

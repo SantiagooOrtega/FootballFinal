@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated'
-import { Colors } from '../../theme/colors'
+import { useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface ComparisonBarProps {
   label: string
@@ -10,6 +11,7 @@ interface ComparisonBarProps {
 }
 
 function Bar({ share, align }: { share: number; align: 'left' | 'right' }) {
+  const styles = useThemedStyles(createStyles)
   const progress = useSharedValue(0)
 
   useEffect(() => {
@@ -26,6 +28,7 @@ function Bar({ share, align }: { share: number; align: 'left' | 'right' }) {
 }
 
 export function ComparisonBar({ label, home, away }: ComparisonBarProps) {
+  const styles = useThemedStyles(createStyles)
   const total = home + away
   const homeShare = total === 0 ? 0 : home / total
   const awayShare = total === 0 ? 0 : away / total
@@ -45,17 +48,18 @@ export function ComparisonBar({ label, home, away }: ComparisonBarProps) {
   )
 }
 
-const styles = StyleSheet.create({
-  wrap: { gap: 8 },
-  labels: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  label: { color: Colors.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.4 },
-  value: { color: Colors.textMuted, fontSize: 15, fontWeight: '800', minWidth: 32 },
-  valueLead: { color: Colors.text },
-  bars: { flexDirection: 'row', gap: 6 },
-  track: { flex: 1, height: 8, borderRadius: 4, backgroundColor: Colors.surfaceHigh, overflow: 'hidden' },
-  trackLeft: { alignItems: 'flex-end' },
-  trackRight: { alignItems: 'flex-start' },
-  fill: { height: '100%', borderRadius: 4 },
-  fillHome: { backgroundColor: Colors.primary },
-  fillAway: { backgroundColor: Colors.info },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    wrap: { gap: 8 },
+    labels: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    label: { color: c.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.4 },
+    value: { color: c.textMuted, fontSize: 15, fontWeight: '800', minWidth: 32 },
+    valueLead: { color: c.text },
+    bars: { flexDirection: 'row', gap: 6 },
+    track: { flex: 1, height: 8, borderRadius: 4, backgroundColor: c.surfaceHigh, overflow: 'hidden' },
+    trackLeft: { alignItems: 'flex-end' },
+    trackRight: { alignItems: 'flex-start' },
+    fill: { height: '100%', borderRadius: 4 },
+    fillHome: { backgroundColor: c.primary },
+    fillAway: { backgroundColor: c.info },
+  })
