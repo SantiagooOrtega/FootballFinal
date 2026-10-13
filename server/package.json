@@ -9,6 +9,7 @@
     "db:migrate": "node src/database/migrate.js",
     "db:seed": "node src/database/seed.js",
     "db:sync": "node src/database/sync.js",
+    "db:analyze": "node src/database/analyze.js",
     "db:clean-sample": "node src/database/clean-sample.js"
   },
   "dependencies": {
