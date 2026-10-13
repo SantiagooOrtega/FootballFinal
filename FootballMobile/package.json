@@ -30,6 +30,7 @@
   },
   "scripts": {
     "start": "expo start",
+    "mock": "node scripts/mock-server.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
