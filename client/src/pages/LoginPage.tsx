@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, Zap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -34,6 +35,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-dark-900 flex items-center justify-center p-4 hero-pattern">
       {/* Fondo decorativo */}
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeToggle />
+      </div>
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/5 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-600/5 rounded-full blur-3xl" />
@@ -51,17 +56,17 @@ export default function LoginPage() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-glow-lg mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-glow-lg mb-4 text-white"
           >
             <span className="text-3xl">⚽</span>
           </motion.div>
-          <h1 className="text-3xl font-display font-bold text-white">FootballAI</h1>
+          <h1 className="text-3xl font-display font-bold text-ink">FootballAI</h1>
           <p className="text-gray-400 mt-1 text-sm">Pronósticos con Inteligencia Artificial</p>
         </div>
 
         {/* Card */}
         <div className="glass-card p-8">
-          <h2 className="text-xl font-display font-bold text-white mb-6">Iniciar Sesión</h2>
+          <h2 className="text-xl font-display font-bold text-ink mb-6">Iniciar Sesión</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
@@ -109,8 +114,8 @@ export default function LoginPage() {
                 <Zap size={14} className="text-primary-400 mt-0.5 shrink-0" />
                 <div className="text-xs text-gray-400">
                   <p className="font-medium text-primary-400 mb-0.5">Cuenta demo</p>
-                  <p>Email: <span className="text-white font-mono">demo@football.com</span></p>
-                  <p>Pass: <span className="text-white font-mono">password123</span></p>
+                  <p>Email: <span className="text-ink font-mono">demo@football.com</span></p>
+                  <p>Pass: <span className="text-ink font-mono">password123</span></p>
                 </div>
               </div>
             </div>
