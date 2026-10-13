@@ -139,6 +139,8 @@ const server = http.createServer(async (req, res) => {
   const key = `${req.method} ${path}`
   console.log(key)
 
+  if (key === 'GET /health') return send(res, 200, { status: 'OK', message: 'Servidor de prueba corriendo' })
+
   if (key === 'POST /auth/login') {
     const { email, password } = await readBody(req)
     if (email !== user.email || password !== 'password123') {
