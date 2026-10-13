@@ -5,8 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import type { BottomTabBarProps } from 'expo-router/js-tabs'
-import { Colors } from '../../theme/colors'
 import { PressableScale } from './PressableScale'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 type IconName = keyof typeof Ionicons.glyphMap
 
@@ -18,6 +19,8 @@ const TABS: Record<string, { label: string; icon: IconName; iconActive: IconName
 }
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const insets = useSafeAreaInsets()
   const [width, setWidth] = useState(0)
   const tabWidth = width / state.routes.length
@@ -55,7 +58,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               <Ionicons
                 name={focused ? tab.iconActive : tab.icon}
                 size={23}
-                color={focused ? Colors.primary : Colors.textFaint}
+                color={focused ? colors.primary : colors.textFaint}
               />
               <Text style={[styles.label, focused && styles.labelActive]}>{tab.label}</Text>
             </PressableScale>
@@ -66,16 +69,17 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   )
 }
 
-const styles = StyleSheet.create({
-  bar: {
-    backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  row: { flexDirection: 'row', paddingTop: 10 },
-  indicatorTrack: { position: 'absolute', top: 0, left: 0, alignItems: 'center' },
-  indicator: { width: 28, height: 3, borderRadius: 2, backgroundColor: Colors.primary },
-  tab: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 4 },
-  label: { fontSize: 11, fontWeight: '700', color: Colors.textFaint },
-  labelActive: { color: Colors.primary },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    bar: {
+      backgroundColor: c.surface,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+    },
+    row: { flexDirection: 'row', paddingTop: 10 },
+    indicatorTrack: { position: 'absolute', top: 0, left: 0, alignItems: 'center' },
+    indicator: { width: 28, height: 3, borderRadius: 2, backgroundColor: c.primary },
+    tab: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 4 },
+    label: { fontSize: 11, fontWeight: '700', color: c.textFaint },
+    labelActive: { color: c.primary },
+  })

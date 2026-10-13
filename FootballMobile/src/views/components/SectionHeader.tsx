@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { Colors } from '../../theme/colors'
-import { Type } from '../../theme/typography'
+import { useThemedStyles, useType } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface SectionHeaderProps {
   title: string
@@ -9,9 +9,11 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, actionLabel, onAction }: SectionHeaderProps) {
+  const styles = useThemedStyles(createStyles)
+  const type = useType()
   return (
     <View style={styles.row}>
-      <Text style={Type.heading}>{title}</Text>
+      <Text style={type.heading}>{title}</Text>
       {actionLabel && onAction ? (
         <Pressable hitSlop={10} onPress={onAction}>
           <Text style={styles.action}>{actionLabel}</Text>
@@ -21,7 +23,8 @@ export function SectionHeader({ title, actionLabel, onAction }: SectionHeaderPro
   )
 }
 
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  action: { color: Colors.primary, fontSize: 14, fontWeight: '700' },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    action: { color: c.primary, fontSize: 14, fontWeight: '700' },
+  })
