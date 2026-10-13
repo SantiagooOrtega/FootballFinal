@@ -12,10 +12,12 @@ import Animated, {
 } from 'react-native-reanimated'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { AuthProvider, useAuth } from '../controllers/AuthContext'
-import { Colors } from '../theme/colors'
 import { LogoMark } from '../views/components/Logo'
+import { ThemeProvider, useTheme, useThemedStyles } from '../theme/ThemeProvider'
+import type { Palette } from '../theme/colors'
 
 function BootScreen() {
+  const styles = useThemedStyles(createStyles)
   const pulse = useSharedValue(1)
 
   useEffect(() => {
@@ -37,6 +39,7 @@ function BootScreen() {
 }
 
 function Navigator() {
+  const { colors } = useTheme()
   const { status } = useAuth()
 
   if (status === 'loading') return <BootScreen />
@@ -46,7 +49,7 @@ function Navigator() {
       screenOptions={{
         headerShown: false,
         animation: 'fade',
-        contentStyle: { backgroundColor: Colors.bg },
+        contentStyle: { backgroundColor: colors.bg },
       }}
     >
       <Stack.Protected guard={status === 'signedOut'}>
@@ -60,12 +63,15 @@ function Navigator() {
   )
 }
 
-export default function RootLayout() {
+function Shell() {
+  const styles = useThemedStyles(createStyles)
+  const { mode } = useTheme()
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <AuthProvider>
-          <StatusBar style="light" />
+          <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
           <Navigator />
         </AuthProvider>
       </SafeAreaProvider>
@@ -73,7 +79,16 @@ export default function RootLayout() {
   )
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.bg },
-  boot: { flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center' },
-})
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <Shell />
+    </ThemeProvider>
+  )
+}
+
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    root: { flex: 1, backgroundColor: c.bg },
+    boot: { flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' },
+  })
