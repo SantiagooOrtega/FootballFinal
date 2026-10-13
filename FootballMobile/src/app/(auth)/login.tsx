@@ -4,16 +4,19 @@ import { Link } from 'expo-router'
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import { useAuth } from '../../controllers/AuthContext'
 import { errorMessage } from '../../services/api'
-import { Colors } from '../../theme/colors'
 import { Button } from '../../views/components/Button'
 import { ErrorBanner } from '../../views/components/ErrorBanner'
 import { Logo } from '../../views/components/Logo'
 import { Screen } from '../../views/components/Screen'
 import { TextField } from '../../views/components/TextField'
+import { ThemeToggle } from '../../views/components/ThemeToggle'
+import { useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 const DEMO = { email: 'demo@football.com', password: 'password123' }
 
 export default function LoginScreen() {
+  const styles = useThemedStyles(createStyles)
   const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -43,6 +46,10 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          <View style={styles.topRow}>
+            <ThemeToggle />
+          </View>
+
           <Animated.View entering={FadeInDown.duration(600).springify().damping(16)} style={styles.brand}>
             <Logo size={72} wordmark={false} />
             <Text style={styles.wordmark}>
@@ -100,24 +107,26 @@ export default function LoginScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  scroll: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 32 },
-  brand: { alignItems: 'center', gap: 10 },
-  wordmark: { color: Colors.text, fontSize: 34, fontWeight: '800', letterSpacing: -1 },
-  ai: { color: Colors.primary },
-  tagline: { color: Colors.textMuted, fontSize: 14, fontWeight: '500', textAlign: 'center' },
-  form: {
-    gap: 16,
-    padding: 20,
-    borderRadius: 24,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  title: { color: Colors.text, fontSize: 20, fontWeight: '800' },
-  actions: { gap: 12, marginTop: 4 },
-  footer: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
-  footerText: { color: Colors.textMuted, fontSize: 14, fontWeight: '500' },
-  link: { color: Colors.primary, fontSize: 14, fontWeight: '800' },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    flex: { flex: 1 },
+    scroll: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 32 },
+    topRow: { alignItems: 'flex-end' },
+    brand: { alignItems: 'center', gap: 10 },
+    wordmark: { color: c.text, fontSize: 34, fontWeight: '800', letterSpacing: -1 },
+    ai: { color: c.primary },
+    tagline: { color: c.textMuted, fontSize: 14, fontWeight: '500', textAlign: 'center' },
+    form: {
+      gap: 16,
+      padding: 20,
+      borderRadius: 24,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    title: { color: c.text, fontSize: 20, fontWeight: '800' },
+    actions: { gap: 12, marginTop: 4 },
+    footer: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
+    footerText: { color: c.textMuted, fontSize: 14, fontWeight: '500' },
+    link: { color: c.primary, fontSize: 14, fontWeight: '800' },
+  })
