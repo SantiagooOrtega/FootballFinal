@@ -126,6 +126,41 @@ const MatchModel = {
   },
 
   /**
+   * Próximos partidos que todavía no tienen pronóstico de la IA,
+   * con las estadísticas de ambos equipos para el análisis
+   */
+  async findNeedingAnalysis(limit = 40) {
+    const result = await query(
+      `SELECT m.id, m.match_date, l.name AS league,
+              ht.name AS home_name, ht.wins AS home_wins, ht.draws AS home_draws,
+              ht.losses AS home_losses, ht.goals_for AS home_gf,
+              ht.goals_against AS home_ga, ht.form AS home_form,
+              at2.name AS away_name, at2.wins AS away_wins, at2.draws AS away_draws,
+              at2.losses AS away_losses, at2.goals_for AS away_gf,
+              at2.goals_against AS away_ga, at2.form AS away_form
+       FROM matches m
+       JOIN teams ht ON m.home_team_id = ht.id
+       JOIN teams at2 ON m.away_team_id = at2.id
+       JOIN leagues l ON m.league_id = l.id
+       WHERE m.status = 'scheduled' AND m.match_date > NOW()
+         AND m.ai_prediction IS NULL
+       ORDER BY m.match_date ASC
+       LIMIT $1`,
+      [limit]
+    );
+    return result.rows;
+  },
+
+  async saveAnalysis(id, { prediction, confidence, analysis }) {
+    await query(
+      `UPDATE matches
+       SET ai_prediction = $1, ai_confidence = $2, ai_analysis = $3, updated_at = NOW()
+       WHERE id = $4`,
+      [prediction, confidence, analysis, id]
+    );
+  },
+
+  /**
    * Estadísticas globales
    */
   async getStats() {
