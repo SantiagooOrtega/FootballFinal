@@ -1,8 +1,10 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
-import { Colors, Radius } from '../../theme/colors'
+import { Radius } from '../../theme/colors'
 import { PressableScale } from './PressableScale'
+import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface ButtonProps {
   label: string
@@ -14,9 +16,11 @@ interface ButtonProps {
 }
 
 export function Button({ label, onPress, variant = 'primary', loading, disabled, icon }: ButtonProps) {
+  const styles = useThemedStyles(createStyles)
+  const { colors } = useTheme()
   const inactive = disabled || loading
   const isPrimary = variant === 'primary'
-  const tint = isPrimary ? Colors.onPrimary : Colors.text
+  const tint = isPrimary ? colors.onPrimary : colors.text
 
   return (
     <PressableScale
@@ -27,7 +31,7 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
     >
       {isPrimary && (
         <LinearGradient
-          colors={[Colors.primary, Colors.primaryStrong]}
+          colors={[colors.primary, colors.primaryStrong]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
@@ -47,19 +51,20 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
   )
 }
 
-const styles = StyleSheet.create({
-  base: {
-    height: 54,
-    borderRadius: Radius.md,
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  ghost: {
-    backgroundColor: Colors.surfaceHigh,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-  },
-  inactive: { opacity: 0.55 },
-  content: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  label: { fontSize: 16, fontWeight: '800', letterSpacing: 0.2 },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    base: {
+      height: 54,
+      borderRadius: Radius.md,
+      overflow: 'hidden',
+      justifyContent: 'center',
+    },
+    ghost: {
+      backgroundColor: c.surfaceHigh,
+      borderWidth: 1,
+      borderColor: c.borderStrong,
+    },
+    inactive: { opacity: 0.55 },
+    content: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+    label: { fontSize: 16, fontWeight: '800', letterSpacing: 0.2 },
+  })
