@@ -82,6 +82,15 @@ Escanea el QR con Expo Go. El celular y la computadora deben estar en la misma r
 la app toma la IP del servidor automáticamente desde Metro (puerto 5001).
 Para apuntar a otra URL define `EXPO_PUBLIC_API_URL`, por ejemplo `http://192.168.1.10:5001/api`.
 
+Para ver la interfaz sin base de datos ni backend, usa el servidor de datos de prueba
+(mismo puerto y rutas que el backend real):
+
+```bash
+cd FootballMobile
+npm run mock      # terminal 1
+npx expo start    # terminal 2
+```
+
 Arquitectura MVC de la app (`FootballMobile/src`):
 
 | Capa | Carpeta | Contenido |
