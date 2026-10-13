@@ -91,7 +91,7 @@ export default function MatchCard({ match, index = 0 }: Props) {
               {match.home_team.short_name?.[0]}
             </div>
           )}
-          <span className="text-sm font-semibold text-white text-center leading-tight">
+          <span className="text-sm font-semibold text-ink text-center leading-tight">
             {match.home_team.short_name || match.home_team.name}
           </span>
           {match.home_team.form && (
@@ -116,7 +116,7 @@ export default function MatchCard({ match, index = 0 }: Props) {
         <div className="flex flex-col items-center gap-1 min-w-[60px]">
           {isFinished && match.score ? (
             <div className="text-center">
-              <span className="text-2xl font-display font-bold text-white">
+              <span className="text-2xl font-display font-bold text-ink">
                 {match.score.home} - {match.score.away}
               </span>
             </div>
@@ -141,7 +141,7 @@ export default function MatchCard({ match, index = 0 }: Props) {
               {match.away_team.short_name?.[0]}
             </div>
           )}
-          <span className="text-sm font-semibold text-white text-center leading-tight">
+          <span className="text-sm font-semibold text-ink text-center leading-tight">
             {match.away_team.short_name || match.away_team.name}
           </span>
           {match.away_team.form && (

@@ -57,7 +57,7 @@ export default function ProfilePage() {
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
           {/* Avatar */}
-          <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-800 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-glow shrink-0">
+          <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-800 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-glow shrink-0">
             {user?.username?.[0]?.toUpperCase()}
           </div>
 
@@ -96,7 +96,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-display font-bold text-white">{user?.username}</h1>
+                  <h1 className="text-2xl font-display font-bold text-ink">{user?.username}</h1>
                   {user?.role === 'admin' && (
                     <span className="badge bg-purple-500/20 text-purple-400 border border-purple-500/30">Admin</span>
                   )}
@@ -186,7 +186,7 @@ export default function ProfilePage() {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">
+                  <p className="text-sm font-semibold text-ink truncate">
                     {pred.home_team_name} vs {pred.away_team_name}
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">

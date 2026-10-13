@@ -77,7 +77,7 @@ export default function MatchesPage() {
               'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
               status === f.value
                 ? 'bg-primary-500 text-white shadow-glow'
-                : 'bg-dark-700 text-gray-400 hover:text-white hover:bg-dark-600'
+                : 'bg-dark-700 text-gray-400 hover:text-ink hover:bg-dark-600'
             )}
           >
             {f.label}
@@ -112,7 +112,7 @@ export default function MatchesPage() {
       ) : (
         <>
           <p className="text-xs text-gray-500">
-            <span className="text-white font-medium">{filtered.length}</span> partido{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
+            <span className="text-ink font-medium">{filtered.length}</span> partido{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
           </p>
           <div className="grid gap-3">
             {filtered.map((match, i) => (

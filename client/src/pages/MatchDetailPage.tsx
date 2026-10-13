@@ -73,7 +73,7 @@ export default function MatchDetailPage() {
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+        className="flex items-center gap-2 text-gray-400 hover:text-ink transition-colors text-sm"
       >
         <ArrowLeft size={16} />
         Volver a partidos
@@ -108,7 +108,7 @@ export default function MatchDetailPage() {
               </div>
             )}
             <div>
-              <p className="font-display font-bold text-white text-lg">{match.home_team.name}</p>
+              <p className="font-display font-bold text-ink text-lg">{match.home_team.name}</p>
               {match.home_team.stats && (
                 <p className="text-xs text-gray-500 mt-0.5">
                   {match.home_team.stats.wins}V · {match.home_team.stats.draws}E · {match.home_team.stats.losses}D
@@ -121,7 +121,7 @@ export default function MatchDetailPage() {
           <div className="flex flex-col items-center gap-2 min-w-[80px]">
             {isFinished && match.score ? (
               <div className="text-center">
-                <span className="text-4xl font-display font-bold text-white">
+                <span className="text-4xl font-display font-bold text-ink">
                   {match.score.home} - {match.score.away}
                 </span>
                 <p className="text-xs text-gray-500 mt-1">Final</p>
@@ -152,7 +152,7 @@ export default function MatchDetailPage() {
               </div>
             )}
             <div>
-              <p className="font-display font-bold text-white text-lg">{match.away_team.name}</p>
+              <p className="font-display font-bold text-ink text-lg">{match.away_team.name}</p>
               {match.away_team.stats && (
                 <p className="text-xs text-gray-500 mt-0.5">
                   {match.away_team.stats.wins}V · {match.away_team.stats.draws}E · {match.away_team.stats.losses}D
@@ -184,7 +184,7 @@ export default function MatchDetailPage() {
               <Brain size={20} className="text-primary-400" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-white">Análisis de IA</h3>
+              <h3 className="font-display font-bold text-ink">Análisis de IA</h3>
               <p className="text-xs text-gray-500">Basado en estadísticas históricas</p>
             </div>
             {match.ai.prediction && (
@@ -247,7 +247,7 @@ export default function MatchDetailPage() {
               <Target size={20} className="text-blue-400" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-white">Tu Predicción</h3>
+              <h3 className="font-display font-bold text-ink">Tu Predicción</h3>
               <p className="text-xs text-gray-500">Gana 10 puntos si aciertas</p>
             </div>
             {match.user_prediction && (
@@ -332,7 +332,7 @@ export default function MatchDetailPage() {
       >
         {[match.home_team, match.away_team].map(team => (
           <div key={team.id} className="glass-card p-4">
-            <p className="text-sm font-semibold text-white mb-3">{team.name}</p>
+            <p className="text-sm font-semibold text-ink mb-3">{team.name}</p>
             {team.form && (
               <div>
                 <p className="text-xs text-gray-500 mb-2">Últimos 5 partidos</p>
