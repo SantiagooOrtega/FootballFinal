@@ -129,6 +129,9 @@ const createTables = async () => {
       CREATE INDEX IF NOT EXISTS idx_predictions_user ON predictions(user_id);
       CREATE INDEX IF NOT EXISTS idx_predictions_match ON predictions(match_id);
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_leagues_external ON leagues(external_id);
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_teams_external ON teams(external_id);
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_matches_external ON matches(external_id);
     `);
     console.log('✅ Índices creados');
 
