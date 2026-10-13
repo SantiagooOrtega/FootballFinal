@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, User, Star } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -42,6 +43,10 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-dark-900 flex items-center justify-center p-4">
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeToggle />
+      </div>
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/5 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-600/5 rounded-full blur-3xl" />
@@ -58,16 +63,16 @@ export default function RegisterPage() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-glow-lg mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-glow-lg mb-4 text-white"
           >
             <span className="text-3xl">⚽</span>
           </motion.div>
-          <h1 className="text-3xl font-display font-bold text-white">FootballAI</h1>
+          <h1 className="text-3xl font-display font-bold text-ink">FootballAI</h1>
           <p className="text-gray-400 mt-1 text-sm">Únete y predice partidos con IA</p>
         </div>
 
         <div className="glass-card p-8">
-          <h2 className="text-xl font-display font-bold text-white mb-6">Crear Cuenta</h2>
+          <h2 className="text-xl font-display font-bold text-ink mb-6">Crear Cuenta</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
