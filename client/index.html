@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      try {
+        if (localStorage.getItem('football_theme') === 'light') {
+          document.documentElement.classList.add('light')
+        }
+      } catch (e) {}
+    </script>
     <title>FootballAI — Pronósticos con Inteligencia Artificial</title>
     <meta name="description" content="Predice resultados de partidos de fútbol con el poder de la inteligencia artificial. La 1 app de pronósticos con IA.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
