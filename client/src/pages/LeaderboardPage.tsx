@@ -38,7 +38,7 @@ export default function LeaderboardPage() {
             <Trophy size={24} className="text-yellow-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-display font-bold text-white">Clasificación Global</h1>
+            <h1 className="text-2xl font-display font-bold text-ink">Clasificación Global</h1>
             <p className="text-gray-400 text-sm">Top predictores de la temporada</p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function LeaderboardPage() {
               )}>
                 {entry.username[0].toUpperCase()}
               </div>
-              <p className="font-semibold text-white text-sm truncate">{entry.username}</p>
+              <p className="font-semibold text-ink text-sm truncate">{entry.username}</p>
               <p className={clsx('font-display font-bold text-lg mt-1',
                 i === 1 ? 'text-yellow-400' : i === 0 ? 'text-gray-300' : 'text-orange-400'
               )}>
@@ -139,7 +139,7 @@ export default function LeaderboardPage() {
                   {entry.username[0].toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className={clsx('text-sm font-semibold truncate', entry.id === user?.id ? 'text-primary-400' : 'text-white')}>
+                  <p className={clsx('text-sm font-semibold truncate', entry.id === user?.id ? 'text-primary-400' : 'text-ink')}>
                     {entry.username}
                     {entry.id === user?.id && <span className="text-xs text-primary-500 ml-1">(tú)</span>}
                   </p>

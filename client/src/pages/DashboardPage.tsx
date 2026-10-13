@@ -68,11 +68,11 @@ export default function DashboardPage() {
         </div>
         <div className="relative">
           <p className="text-primary-400 text-sm font-medium mb-1">Bienvenido de vuelta</p>
-          <h1 className="text-3xl font-display font-bold text-white">
+          <h1 className="text-3xl font-display font-bold text-ink">
             {user?.username} 👋
           </h1>
           <p className="text-gray-400 mt-2 text-sm max-w-md">
-            Hay <span className="text-white font-semibold">{matches.length} partidos</span> próximos.
+            Hay <span className="text-ink font-semibold">{matches.length} partidos</span> próximos.
             La IA ya tiene sus predicciones listas.
           </p>
           <Link
@@ -154,7 +154,7 @@ export default function DashboardPage() {
             <Brain size={24} className="text-primary-400" />
           </div>
           <div>
-            <h3 className="font-display font-bold text-white mb-1">IA de Pronósticos</h3>
+            <h3 className="font-display font-bold text-ink mb-1">IA de Pronósticos</h3>
             <p className="text-gray-400 text-sm">
               Nuestro modelo analiza estadísticas de equipos, forma reciente, historial de enfrentamientos
               y más de 20 variables para generar predicciones precisas. Próximamente integrado con Google Gemini.
