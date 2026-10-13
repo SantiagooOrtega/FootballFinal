@@ -7,7 +7,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
-import { Colors } from '../../theme/colors'
+import { useThemedStyles } from '../../theme/ThemeProvider'
+import type { Palette } from '../../theme/colors'
 
 interface SkeletonProps {
   height: number
@@ -17,6 +18,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ height, width = '100%', radius = 16, style }: SkeletonProps) {
+  const styles = useThemedStyles(createStyles)
   const opacity = useSharedValue(0.5)
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export function Skeleton({ height, width = '100%', radius = 16, style }: Skeleto
   )
 }
 
-const styles = StyleSheet.create({
-  base: { backgroundColor: Colors.surfaceHigh },
-})
+const createStyles = (c: Palette) =>
+  StyleSheet.create({
+    base: { backgroundColor: c.surfaceHigh },
+  })
