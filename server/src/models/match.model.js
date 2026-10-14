@@ -4,7 +4,7 @@ const MatchModel = {
   /**
    * Obtener partidos con info completa de equipos y liga
    */
-  async findAll({ status, league_id, limit = 20, offset = 0, date } = {}) {
+  async findAll({ status, league_id, limit = 20, offset = 0, date, lang = 'es' } = {}) {
     let conditions = [];
     let values = [];
     let idx = 1;
@@ -29,7 +29,7 @@ const MatchModel = {
     const result = await query(
       `SELECT
          m.id, m.match_date, m.status, m.home_score, m.away_score,
-         m.venue, m.round, m.ai_prediction, m.ai_confidence, m.ai_analysis,
+         m.venue, m.round, m.ai_prediction, m.ai_confidence, m.ai_analysis, m.ai_analysis_en,
          ht.id as home_team_id, ht.name as home_team_name, ht.short_name as home_short,
          ht.logo_url as home_logo, ht.form as home_form,
          ht.wins as home_wins, ht.draws as home_draws, ht.losses as home_losses,
@@ -47,17 +47,17 @@ const MatchModel = {
        LIMIT $${idx++} OFFSET $${idx}`,
       values
     );
-    return result.rows.map(formatMatch);
+    return result.rows.map((row) => formatMatch(row, lang));
   },
 
   /**
    * Obtener un partido por ID con predicción del usuario si está autenticado
    */
-  async findById(id, userId = null) {
+  async findById(id, userId = null, lang = 'es') {
     const result = await query(
       `SELECT
          m.id, m.match_date, m.status, m.home_score, m.away_score,
-         m.venue, m.round, m.ai_prediction, m.ai_confidence, m.ai_analysis,
+         m.venue, m.round, m.ai_prediction, m.ai_confidence, m.ai_analysis, m.ai_analysis_en,
          ht.id as home_team_id, ht.name as home_team_name, ht.short_name as home_short,
          ht.logo_url as home_logo, ht.form as home_form,
          ht.wins as home_wins, ht.draws as home_draws, ht.losses as home_losses,
@@ -77,7 +77,7 @@ const MatchModel = {
 
     if (result.rows.length === 0) return null;
 
-    const match = formatMatch(result.rows[0]);
+    const match = formatMatch(result.rows[0], lang);
 
     // Adjuntar predicción del usuario si está autenticado
     if (userId) {
@@ -151,13 +151,30 @@ const MatchModel = {
     return result.rows;
   },
 
-  async saveAnalysis(id, { prediction, confidence, analysis }) {
+  async saveAnalysis(id, { prediction, confidence, analysis, analysis_en }) {
     await query(
       `UPDATE matches
-       SET ai_prediction = $1, ai_confidence = $2, ai_analysis = $3, updated_at = NOW()
-       WHERE id = $4`,
-      [prediction, confidence, analysis, id]
+       SET ai_prediction = $1, ai_confidence = $2, ai_analysis = $3,
+           ai_analysis_en = $4, updated_at = NOW()
+       WHERE id = $5`,
+      [prediction, confidence, analysis, analysis_en, id]
     );
+  },
+
+  /** Análisis ya generados en español que todavía no tienen versión en inglés */
+  async findNeedingTranslation(limit = 30) {
+    const result = await query(
+      `SELECT id, ai_analysis FROM matches
+       WHERE ai_analysis IS NOT NULL AND ai_analysis_en IS NULL
+       ORDER BY match_date DESC
+       LIMIT $1`,
+      [limit]
+    );
+    return result.rows;
+  },
+
+  async saveTranslation(id, analysis_en) {
+    await query('UPDATE matches SET ai_analysis_en = $1 WHERE id = $2', [analysis_en, id]);
   },
 
   /**
@@ -179,7 +196,7 @@ const MatchModel = {
 /**
  * Formatea la fila plana de la DB en objeto estructurado
  */
-function formatMatch(row) {
+function formatMatch(row, lang = 'es') {
   return {
     id: row.id,
     match_date: row.match_date,
@@ -226,7 +243,7 @@ function formatMatch(row) {
     ai: {
       prediction: row.ai_prediction,
       confidence: row.ai_confidence,
-      analysis: row.ai_analysis,
+      analysis: lang === 'en' && row.ai_analysis_en ? row.ai_analysis_en : row.ai_analysis,
     },
     user_prediction: row.user_prediction || null,
   };
