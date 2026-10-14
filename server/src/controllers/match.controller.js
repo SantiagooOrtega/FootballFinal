@@ -18,6 +18,7 @@ const MatchController = {
         date,
         limit: parseInt(limit),
         offset: parseInt(offset),
+        lang: req.lang,
       });
 
       res.json({
@@ -49,7 +50,7 @@ const MatchController = {
   async getById(req, res, next) {
     try {
       const userId = req.user?.id || null;
-      const match = await MatchModel.findById(req.params.id, userId);
+      const match = await MatchModel.findById(req.params.id, userId, req.lang);
 
       if (!match) {
         return res.status(404).json({ error: 'Partido no encontrado.' });
