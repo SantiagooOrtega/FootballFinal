@@ -34,6 +34,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
+// ─── Idioma de la respuesta (Accept-Language: es | en) ─────────────────────────
+app.use((req, res, next) => {
+  const header = (req.headers['accept-language'] || '').toLowerCase();
+  req.lang = header.startsWith('en') ? 'en' : 'es';
+  next();
+});
+
 // ─── Parsers ──────────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
