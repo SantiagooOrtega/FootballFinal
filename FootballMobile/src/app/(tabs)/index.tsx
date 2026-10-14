@@ -14,8 +14,10 @@ import { StatCard } from '../../views/components/StatCard'
 import { StateView } from '../../views/components/StateView'
 import { ThemeToggle } from '../../views/components/ThemeToggle'
 import { useTheme, useType } from '../../theme/ThemeProvider'
+import { useI18n } from '../../i18n/I18nProvider'
 
 export default function HomeScreen() {
+  const { t } = useI18n()
   const { colors } = useTheme()
   const type = useType()
   const router = useRouter()
@@ -45,9 +47,9 @@ export default function HomeScreen() {
       >
         <Animated.View entering={FadeInDown.duration(500)} style={styles.header}>
           <View style={styles.greeting}>
-            <Text style={type.bodyMuted}>Bienvenido de vuelta</Text>
+            <Text style={type.bodyMuted}>{t('home.welcome')}</Text>
             <Text style={type.title} numberOfLines={1}>
-              {user?.username ?? 'Jugador'}
+              {user?.username ?? t('home.player')}
             </Text>
           </View>
           <View style={styles.actions}>
@@ -57,9 +59,9 @@ export default function HomeScreen() {
         </Animated.View>
 
         <View style={styles.stats}>
-          <StatCard icon="flash" value={String(user?.points ?? 0)} label="Puntos" index={0} />
-          <StatCard icon="locate" value={`${Math.round(user?.accuracy ?? 0)}%`} label="Acierto" index={1} />
-          <StatCard icon="layers" value={String(data?.summary.total ?? user?.totalPredictions ?? 0)} label="Pronósticos" index={2} />
+          <StatCard icon="flash" value={String(user?.points ?? 0)} label={t('home.points')} index={0} />
+          <StatCard icon="locate" value={`${Math.round(user?.accuracy ?? 0)}%`} label={t('home.accuracy')} index={1} />
+          <StatCard icon="layers" value={String(data?.summary.total ?? user?.totalPredictions ?? 0)} label={t('home.predictions')} index={2} />
         </View>
 
         {loading && (
@@ -73,9 +75,9 @@ export default function HomeScreen() {
         {error && !loading && (
           <StateView
             icon="cloud-offline-outline"
-            title="No pudimos cargar tu inicio"
+            title={t('home.loadError')}
             message={error}
-            actionLabel="Reintentar"
+            actionLabel={t('common.retry')}
             onAction={retry}
           />
         )}
@@ -83,9 +85,9 @@ export default function HomeScreen() {
         {data && (
           <>
             <View style={styles.section}>
-              <SectionHeader title="Hoy y mañana" />
+              <SectionHeader title={t('home.todayTomorrow')} />
               {data.today.length === 0 ? (
-                <Text style={type.bodyMuted}>No hay partidos programados para hoy ni mañana.</Text>
+                <Text style={type.bodyMuted}>{t('home.noToday')}</Text>
               ) : (
                 <ScrollView
                   horizontal
@@ -111,8 +113,8 @@ export default function HomeScreen() {
             {upcoming.length > 0 && (
               <View style={styles.section}>
                 <SectionHeader
-                  title="Próximos partidos"
-                  actionLabel="Ver todos"
+                  title={t('home.upcoming')}
+                  actionLabel={t('home.seeAll')}
                   onAction={() => router.navigate('/matches')}
                 />
                 {upcoming.map((match, index) => (
@@ -123,13 +125,13 @@ export default function HomeScreen() {
 
             <View style={styles.section}>
               <SectionHeader
-                title="Tus últimos pronósticos"
-                actionLabel={data.recent.length > 0 ? 'Ver perfil' : undefined}
+                title={t('home.recent')}
+                actionLabel={data.recent.length > 0 ? t('home.seeProfile') : undefined}
                 onAction={() => router.navigate('/profile')}
               />
               {data.recent.length === 0 ? (
                 <Text style={type.bodyMuted}>
-                  Aún no has hecho pronósticos. Elige un partido y deja tu predicción.
+                  {t('home.noPredictions')}
                 </Text>
               ) : (
                 data.recent.map((record, index) => (
