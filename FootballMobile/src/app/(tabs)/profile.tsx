@@ -13,9 +13,11 @@ import { PredictionRow } from '../../views/components/PredictionRow'
 import { Screen } from '../../views/components/Screen'
 import { SectionHeader } from '../../views/components/SectionHeader'
 import { Skeleton } from '../../views/components/Skeleton'
+import { SettingsButton } from '../../views/components/SettingsButton'
 import { ThemeToggle } from '../../views/components/ThemeToggle'
 import { useTheme, useThemedStyles, useType } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 function Tally({ value, label, color }: { value: number; label: string; color: string }) {
   const styles = useThemedStyles(createStyles)
@@ -28,6 +30,7 @@ function Tally({ value, label, color }: { value: number; label: string; color: s
 }
 
 export default function ProfileScreen() {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const type = useType()
@@ -42,9 +45,9 @@ export default function ProfileScreen() {
   )
 
   const confirmLogout = () => {
-    Alert.alert('Cerrar sesión', '¿Seguro que quieres salir de tu cuenta?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesión', style: 'destructive', onPress: () => void logout() },
+    Alert.alert(t('profile.logout'), t('profile.logoutMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('profile.logout'), style: 'destructive', onPress: () => void logout() },
     ])
   }
 
@@ -61,6 +64,7 @@ export default function ProfileScreen() {
       >
         <View style={styles.topRow}>
           <ThemeToggle />
+          <SettingsButton />
         </View>
 
         <Animated.View entering={FadeInDown.duration(500)} style={styles.identity}>
@@ -78,14 +82,14 @@ export default function ProfileScreen() {
         <Animated.View entering={FadeInDown.delay(120).springify().damping(18)} style={styles.summary}>
           <ConfidenceRing value={user.accuracy} size={104} label="ACIERTO" />
           <View style={styles.tallies}>
-            <Tally value={user.points} label="Puntos" color={colors.primary} />
-            <Tally value={user.correctPredictions} label="Aciertos" color={colors.text} />
-            <Tally value={user.totalPredictions} label="Pronósticos" color={colors.text} />
+            <Tally value={user.points} label={t('profile.points')} color={colors.primary} />
+            <Tally value={user.correctPredictions} label={t('profile.correct')} color={colors.text} />
+            <Tally value={user.totalPredictions} label={t('profile.predictions')} color={colors.text} />
           </View>
         </Animated.View>
 
         <View style={styles.section}>
-          <SectionHeader title="Historial de pronósticos" />
+          <SectionHeader title={t('profile.history')} />
           {loading && (
             <>
               <Skeleton height={68} />
@@ -94,7 +98,7 @@ export default function ProfileScreen() {
           )}
           {data && data.records.length === 0 && (
             <Text style={type.bodyMuted}>
-              Todavía no tienes pronósticos. Abre un partido y haz el primero.
+              {t('profile.empty')}
             </Text>
           )}
           {data?.records.map((record, index) => (
@@ -107,7 +111,7 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        <Button label="Cerrar sesión" variant="ghost" icon="log-out-outline" onPress={confirmLogout} />
+        <Button label={t('profile.logout')} variant="ghost" icon="log-out-outline" onPress={confirmLogout} />
       </ScrollView>
     </Screen>
   )
@@ -116,7 +120,7 @@ export default function ProfileScreen() {
 const createStyles = (c: Palette) =>
   StyleSheet.create({
     scroll: { padding: 20, paddingBottom: 32, gap: 24 },
-    topRow: { alignItems: 'flex-end' },
+    topRow: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10 },
     identity: { alignItems: 'center', gap: 6, paddingTop: 8 },
     team: {
       flexDirection: 'row',
