@@ -10,8 +10,10 @@ import { Skeleton } from '../../views/components/Skeleton'
 import { StateView } from '../../views/components/StateView'
 import { useTheme, useThemedStyles, useType } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 export default function RankingScreen() {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const type = useType()
@@ -29,8 +31,8 @@ export default function RankingScreen() {
         }
       >
         <View style={styles.heading}>
-          <Text style={type.display}>Ranking</Text>
-          <Text style={type.bodyMuted}>Los mejores pronosticadores de la comunidad.</Text>
+          <Text style={type.display}>{t('ranking.title')}</Text>
+          <Text style={type.bodyMuted}>{t('ranking.subtitle')}</Text>
         </View>
 
         {loading && (
@@ -44,9 +46,9 @@ export default function RankingScreen() {
         {error && !loading && (
           <StateView
             icon="cloud-offline-outline"
-            title="No pudimos cargar el ranking"
+            title={t('ranking.loadError')}
             message={error}
-            actionLabel="Reintentar"
+            actionLabel={t('common.retry')}
             onAction={retry}
           />
         )}
@@ -54,8 +56,8 @@ export default function RankingScreen() {
         {data && data.length === 0 && (
           <StateView
             icon="trophy-outline"
-            title="El ranking está vacío"
-            message="Haz tu primer pronóstico y aparece en la tabla cuando se resuelvan los partidos."
+            title={t('ranking.emptyTitle')}
+            message={t('ranking.emptyMessage')}
           />
         )}
 
@@ -76,10 +78,10 @@ export default function RankingScreen() {
                     <View style={styles.info}>
                       <Text style={styles.name} numberOfLines={1}>
                         {entry.username}
-                        {isMe ? '  (tú)' : ''}
+                        {isMe ? `  ${t('ranking.you')}` : ''}
                       </Text>
                       <Text style={styles.meta}>
-                        {Math.round(entry.accuracy)}% de acierto · {entry.totalPredictions} pronósticos
+                        {t('ranking.stats', { accuracy: Math.round(entry.accuracy), total: entry.totalPredictions })}
                       </Text>
                     </View>
                     <Text style={styles.points}>{entry.points}</Text>
