@@ -13,6 +13,7 @@ import Animated, {
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { AuthProvider, useAuth } from '../controllers/AuthContext'
 import { LogoMark } from '../views/components/Logo'
+import { I18nProvider } from '../i18n/I18nProvider'
 import { ThemeProvider, useTheme, useThemedStyles } from '../theme/ThemeProvider'
 import type { Palette } from '../theme/colors'
 
@@ -58,6 +59,7 @@ function Navigator() {
       <Stack.Protected guard={status === 'signedIn'}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="match/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
       </Stack.Protected>
     </Stack>
   )
@@ -82,7 +84,9 @@ function Shell() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <Shell />
+      <I18nProvider>
+        <Shell />
+      </I18nProvider>
     </ThemeProvider>
   )
 }
