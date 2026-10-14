@@ -12,7 +12,7 @@ import {
   type Outcome,
 } from '../../models'
 import { useMatch } from '../../controllers/dataControllers'
-import { formatKickoff } from '../../lib/format'
+import { formatKickoff, formatRound } from '../../lib/format'
 import { Radius } from '../../theme/colors'
 import { Button } from '../../views/components/Button'
 import { Chip } from '../../views/components/Chip'
@@ -28,8 +28,10 @@ import { StatusPill } from '../../views/components/StatusPill'
 import { TeamCrest } from '../../views/components/TeamCrest'
 import { useTheme, useThemedStyles, useType } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 function Hero({ match }: { match: Match }) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const { homeTeam, awayTeam, score } = match
@@ -38,7 +40,7 @@ function Hero({ match }: { match: Match }) {
       <View style={styles.heroTop}>
         <Text style={styles.league} numberOfLines={1}>
           {match.league.name}
-          {match.round ? ` · ${match.round}` : ''}
+          {match.round ? ` · ${formatRound(match.round)}` : ''}
         </Text>
         <StatusPill status={match.status} />
       </View>
@@ -55,7 +57,7 @@ function Hero({ match }: { match: Match }) {
               {score.home} - {score.away}
             </Text>
           ) : (
-            <Text style={styles.heroVs}>VS</Text>
+            <Text style={styles.heroVs}>{t('match.vs')}</Text>
           )}
         </View>
         <View style={styles.heroTeam}>
@@ -84,21 +86,22 @@ function Hero({ match }: { match: Match }) {
 }
 
 function AiCard({ match }: { match: Match }) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const type = useType()
   const { ai } = match
   const headline = ai.outcome
     ? ai.outcome === 'draw'
-      ? 'La IA proyecta un empate'
-      : `La IA proyecta victoria de ${outcomeLabel(match, ai.outcome)}`
-    : 'Análisis en preparación'
+      ? t('detail.aiDraw')
+      : t('detail.aiHome', { team: outcomeLabel(match, ai.outcome) })
+    : t('detail.aiPending')
 
   return (
     <Animated.View entering={FadeInDown.delay(120).springify().damping(18)} style={styles.card}>
       <View style={styles.cardHeader}>
         <Ionicons name="sparkles" size={16} color={colors.highlight} />
-        <Text style={type.label}>Análisis de la IA</Text>
+        <Text style={type.label}>{t('detail.aiTitle')}</Text>
       </View>
       <View style={styles.aiRow}>
         {ai.confidence !== null && <ConfidenceRing value={ai.confidence} size={92} label="CONFIANZA" />}
@@ -110,6 +113,7 @@ function AiCard({ match }: { match: Match }) {
 }
 
 function ComparisonCard({ match }: { match: Match }) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const type = useType()
@@ -118,18 +122,18 @@ function ComparisonCard({ match }: { match: Match }) {
     <Animated.View entering={FadeInDown.delay(220).springify().damping(18)} style={styles.card}>
       <View style={styles.cardHeader}>
         <Ionicons name="stats-chart" size={16} color={colors.primary} />
-        <Text style={type.label}>Comparativa</Text>
+        <Text style={type.label}>{t('detail.compare')}</Text>
       </View>
       <View style={styles.formRow}>
         <FormStrip form={homeTeam.form} />
-        <Text style={styles.formLabel}>Racha</Text>
+        <Text style={styles.formLabel}>{t('detail.form')}</Text>
         <FormStrip form={awayTeam.form} />
       </View>
-      <ComparisonBar label="Victorias" home={homeTeam.stats.wins} away={awayTeam.stats.wins} />
-      <ComparisonBar label="Empates" home={homeTeam.stats.draws} away={awayTeam.stats.draws} />
-      <ComparisonBar label="Goles a favor" home={homeTeam.stats.goalsFor} away={awayTeam.stats.goalsFor} />
+      <ComparisonBar label={t('detail.wins')} home={homeTeam.stats.wins} away={awayTeam.stats.wins} />
+      <ComparisonBar label={t('detail.draws')} home={homeTeam.stats.draws} away={awayTeam.stats.draws} />
+      <ComparisonBar label={t('detail.goalsFor')} home={homeTeam.stats.goalsFor} away={awayTeam.stats.goalsFor} />
       <ComparisonBar
-        label="Goles en contra"
+        label={t('detail.goalsAgainst')}
         home={homeTeam.stats.goalsAgainst}
         away={awayTeam.stats.goalsAgainst}
       />
@@ -138,6 +142,7 @@ function ComparisonCard({ match }: { match: Match }) {
 }
 
 export default function MatchDetailScreen() {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const type = useType()
@@ -171,7 +176,7 @@ export default function MatchDetailScreen() {
         <Pressable hitSlop={12} onPress={() => router.back()} style={styles.back}>
           <Ionicons name="chevron-back" size={22} color={colors.text} />
         </Pressable>
-        <Text style={styles.barTitle}>Detalle del partido</Text>
+        <Text style={styles.barTitle}>{t('detail.title')}</Text>
         <View style={styles.back} />
       </View>
 
@@ -186,9 +191,9 @@ export default function MatchDetailScreen() {
       {error && !loading && (
         <StateView
           icon="cloud-offline-outline"
-          title="No pudimos cargar el partido"
+          title={t('detail.loadError')}
           message={error}
-          actionLabel="Reintentar"
+          actionLabel={t('common.retry')}
           onAction={retry}
         />
       )}
@@ -202,25 +207,28 @@ export default function MatchDetailScreen() {
           <Animated.View entering={FadeInDown.delay(320).springify().damping(18)} style={styles.card}>
             <View style={styles.cardHeader}>
               <Ionicons name="locate" size={16} color={colors.primary} />
-              <Text style={type.label}>Tu pronóstico</Text>
+              <Text style={type.label}>{t('detail.yourPick')}</Text>
             </View>
 
             {!open ? (
               <Text style={type.bodyMuted}>
                 {savedPick
-                  ? `Pronosticaste: ${outcomeLabel(match, savedPick.outcome)} (${savedPick.confidence}% de confianza). Este partido ya no admite cambios.`
-                  : 'Este partido ya no admite pronósticos.'}
+                  ? t('detail.pickClosed', {
+                      pick: outcomeLabel(match, savedPick.outcome),
+                      confidence: savedPick.confidence,
+                    })
+                  : t('detail.noPickClosed')}
               </Text>
             ) : (
               <>
                 <OutcomePicker match={match} value={outcome} onChange={setOutcome} />
                 <View style={styles.confidence}>
-                  <Text style={styles.confidenceLabel}>Nivel de confianza</Text>
+                  <Text style={styles.confidenceLabel}>{t('detail.confidence')}</Text>
                   <View style={styles.chips}>
                     {CONFIDENCE_LEVELS.map((level) => (
                       <Chip
                         key={level.value}
-                        label={`${level.label} ${level.value}%`}
+                        label={`${t(level.key)} ${level.value}%`}
                         active={confidence === level.value}
                         onPress={() => setConfidence(level.value)}
                       />
@@ -229,7 +237,7 @@ export default function MatchDetailScreen() {
                 </View>
                 <ErrorBanner message={saveError} />
                 <Button
-                  label={savedPick && unchanged ? 'Pronóstico guardado' : 'Guardar pronóstico'}
+                  label={savedPick && unchanged ? t('detail.saved') : t('detail.save')}
                   icon={savedPick && unchanged ? 'checkmark-circle' : 'save-outline'}
                   loading={saving}
                   disabled={!canSave}
