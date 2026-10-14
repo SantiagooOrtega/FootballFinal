@@ -42,7 +42,7 @@ export function useResource<T>(load: () => Promise<T>, deps: readonly unknown[])
           data: mode === 'silent' ? s.data : null,
           loading: false,
           refreshing: false,
-          error: mode === 'silent' && s.data ? null : errorMessage(err, 'No pudimos cargar la información.'),
+          error: mode === 'silent' && s.data ? null : errorMessage(err, 'error.load'),
         }))
       }
     },
