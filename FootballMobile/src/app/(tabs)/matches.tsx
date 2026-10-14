@@ -11,17 +11,19 @@ import { SegmentedControl } from '../../views/components/SegmentedControl'
 import { Skeleton } from '../../views/components/Skeleton'
 import { StateView } from '../../views/components/StateView'
 import { useTheme, useType } from '../../theme/ThemeProvider'
+import { useI18n } from '../../i18n/I18nProvider'
 
 type StatusFilter = 'all' | MatchStatus
 
 const STATUS_OPTIONS = [
-  { value: 'all', label: 'Todos' },
-  { value: 'scheduled', label: 'Próximos' },
-  { value: 'live', label: 'En vivo' },
-  { value: 'finished', label: 'Final' },
+  { value: 'all', labelKey: 'matches.all' },
+  { value: 'scheduled', labelKey: 'matches.upcoming' },
+  { value: 'live', labelKey: 'matches.live' },
+  { value: 'finished', labelKey: 'matches.final' },
 ] as const
 
 export default function MatchesScreen() {
+  const { t } = useI18n()
   const { colors } = useTheme()
   const type = useType()
   const router = useRouter()
@@ -33,15 +35,19 @@ export default function MatchesScreen() {
   return (
     <Screen>
       <View style={styles.header}>
-        <Text style={type.display}>Partidos</Text>
-        <SegmentedControl options={STATUS_OPTIONS} value={status} onChange={setStatus} />
+        <Text style={type.display}>{t('matches.title')}</Text>
+        <SegmentedControl
+          options={STATUS_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
+          value={status}
+          onChange={setStatus}
+        />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chips}
           style={styles.chipsBleed}
         >
-          <Chip label="Todas las ligas" active={leagueId === undefined} onPress={() => setLeagueId(undefined)} />
+          <Chip label={t('matches.allLeagues')} active={leagueId === undefined} onPress={() => setLeagueId(undefined)} />
           {leagues.data?.map((league) => (
             <Chip
               key={league.id}
@@ -62,9 +68,9 @@ export default function MatchesScreen() {
       ) : matches.error ? (
         <StateView
           icon="cloud-offline-outline"
-          title="No pudimos cargar los partidos"
+          title={t('matches.loadError')}
           message={matches.error}
-          actionLabel="Reintentar"
+          actionLabel={t('common.retry')}
           onAction={matches.retry}
         />
       ) : (
@@ -84,8 +90,8 @@ export default function MatchesScreen() {
             ListEmptyComponent={
               <StateView
                 icon="football-outline"
-                title="Sin partidos"
-                message="No hay partidos que coincidan con estos filtros."
+                title={t('matches.emptyTitle')}
+                message={t('matches.emptyMessage')}
               />
             }
             renderItem={({ item, index }) => (
