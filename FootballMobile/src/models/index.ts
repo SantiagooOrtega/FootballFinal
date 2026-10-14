@@ -1,3 +1,5 @@
+import { translate } from '../i18n'
+
 export type Outcome = 'home' | 'draw' | 'away'
 export type MatchStatus = 'scheduled' | 'live' | 'finished' | 'postponed' | 'cancelled'
 
@@ -100,14 +102,14 @@ export interface LeaderboardEntry {
 }
 
 export const CONFIDENCE_LEVELS = [
-  { label: 'Baja', value: 40 },
-  { label: 'Media', value: 60 },
-  { label: 'Alta', value: 80 },
-  { label: 'Total', value: 95 },
+  { key: 'confidence.low', value: 40 },
+  { key: 'confidence.mid', value: 60 },
+  { key: 'confidence.high', value: 80 },
+  { key: 'confidence.total', value: 95 },
 ] as const
 
 export function outcomeLabel(match: Pick<Match, 'homeTeam' | 'awayTeam'>, outcome: Outcome): string {
-  if (outcome === 'draw') return 'Empate'
+  if (outcome === 'draw') return translate('outcome.draw')
   return outcome === 'home' ? match.homeTeam.name : match.awayTeam.name
 }
 
