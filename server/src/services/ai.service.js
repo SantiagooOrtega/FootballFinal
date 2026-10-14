@@ -2,6 +2,7 @@ const MatchModel = require('../models/match.model');
 
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const BATCH_SIZE = 6;
+const TRANSLATION_BATCH_SIZE = 10;
 const MIN_INTERVAL_MS = 7000;
 const MAX_ATTEMPTS = 4;
 const RETRYABLE = [429, 500, 503];
@@ -18,8 +19,18 @@ const RESPONSE_SCHEMA = {
       prediction: { type: 'STRING', enum: ['home', 'draw', 'away'] },
       confidence: { type: 'INTEGER' },
       analysis: { type: 'STRING' },
+      analysis_en: { type: 'STRING' },
     },
-    required: ['id', 'prediction', 'confidence', 'analysis'],
+    required: ['id', 'prediction', 'confidence', 'analysis', 'analysis_en'],
+  },
+};
+
+const TRANSLATION_SCHEMA = {
+  type: 'ARRAY',
+  items: {
+    type: 'OBJECT',
+    properties: { id: { type: 'STRING' }, analysis_en: { type: 'STRING' } },
+    required: ['id', 'analysis_en'],
   },
 };
 
@@ -50,12 +61,13 @@ function buildPrompt(matches) {
     '- confidence: entero entre 35 y 90. Sé honesto: si el partido está parejo, usa valores bajos.',
     '- analysis: 2 o 3 frases en español que justifiquen el pronóstico con los datos dados.',
     '  No inventes lesiones, alineaciones ni resultados previos que no estén en los datos.',
+    '- analysis_en: la misma explicación traducida al inglés.',
     '',
     blocks.join('\n\n'),
   ].join('\n');
 }
 
-async function callGemini(prompt) {
+async function callGemini(prompt, schema = RESPONSE_SCHEMA) {
   const model = process.env.GEMINI_MODEL || 'gemini-flash-latest';
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
@@ -74,7 +86,7 @@ async function callGemini(prompt) {
         generationConfig: {
           temperature: 0.3,
           responseMimeType: 'application/json',
-          responseSchema: RESPONSE_SCHEMA,
+          responseSchema: schema,
         },
       }),
     });
@@ -118,6 +130,7 @@ const AiService = {
             prediction: r.prediction,
             confidence: Math.min(Math.max(r.confidence, 1), 99),
             analysis: r.analysis.trim(),
+            analysis_en: r.analysis_en.trim(),
           });
           summary.analyzed += 1;
         }
@@ -128,7 +141,41 @@ const AiService = {
       }
     }
 
-    return summary;
+    const translated = await AiService.translatePending({ log });
+    return { ...summary, translated };
+  },
+
+  /** Traduce al inglés los análisis antiguos que solo existen en español */
+  async translatePending({ log = console.log } = {}) {
+    if (!process.env.GEMINI_API_KEY) return 0;
+
+    const pending = await MatchModel.findNeedingTranslation();
+    let translated = 0;
+
+    for (let i = 0; i < pending.length; i += TRANSLATION_BATCH_SIZE) {
+      const batch = pending.slice(i, i + TRANSLATION_BATCH_SIZE);
+      const prompt = [
+        'Traduce al inglés cada análisis de fútbol, manteniendo los datos y el tono.',
+        'Devuelve el mismo id con la traducción en analysis_en.',
+        '',
+        batch.map((m) => `id: ${m.id}\ntexto: ${m.ai_analysis}`).join('\n\n'),
+      ].join('\n');
+
+      try {
+        const results = await callGemini(prompt, TRANSLATION_SCHEMA);
+        const validIds = new Set(batch.map((m) => m.id));
+        for (const r of results) {
+          if (!validIds.has(r.id)) continue;
+          await MatchModel.saveTranslation(r.id, r.analysis_en.trim());
+          translated += 1;
+        }
+        log(`IA: ${Math.min(i + TRANSLATION_BATCH_SIZE, pending.length)}/${pending.length} traducciones`);
+      } catch (error) {
+        log(`IA: fallo traduciendo un lote (${error.message})`);
+      }
+    }
+
+    return translated;
   },
 };
 
