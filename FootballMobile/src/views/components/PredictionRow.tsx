@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated'
+import { translate } from '../../i18n'
 import type { PredictionRecord } from '../../models'
 import { formatDay } from '../../lib/format'
 import { Radius } from '../../theme/colors'
@@ -7,6 +8,7 @@ import { PressableScale } from './PressableScale'
 import { TeamCrest } from './TeamCrest'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 interface PredictionRowProps {
   record: PredictionRecord
@@ -15,20 +17,21 @@ interface PredictionRowProps {
 }
 
 function pickLabel(record: PredictionRecord): string {
-  if (record.outcome === 'draw') return 'Empate'
+  if (record.outcome === 'draw') return translate('outcome.draw')
   return record.outcome === 'home' ? record.homeTeam : record.awayTeam
 }
 
 export function PredictionRow({ record, onPress, index = 0 }: PredictionRowProps) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const { isCorrect } = record
   const badge =
     isCorrect === true
-      ? { text: `+${record.pointsEarned} pts`, fg: colors.primary, bg: colors.primarySoft }
+      ? { text: t('prediction.points', { n: record.pointsEarned }), fg: colors.primary, bg: colors.primarySoft }
       : isCorrect === false
-        ? { text: 'Fallado', fg: colors.loss, bg: colors.lossSoft }
-        : { text: 'Pendiente', fg: colors.textMuted, bg: colors.surfaceHigh }
+        ? { text: t('prediction.missed'), fg: colors.loss, bg: colors.lossSoft }
+        : { text: t('prediction.pending'), fg: colors.textMuted, bg: colors.surfaceHigh }
 
   return (
     <Animated.View entering={FadeInDown.delay(Math.min(index, 8) * 50).springify().damping(18)}>

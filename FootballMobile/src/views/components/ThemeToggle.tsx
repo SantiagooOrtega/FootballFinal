@@ -7,9 +7,11 @@ import { Radius } from '../../theme/colors'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
 import { PressableScale } from './PressableScale'
+import { useI18n } from '../../i18n/I18nProvider'
 
 /** Boton sol/luna para alternar entre modo claro y oscuro. */
 export function ThemeToggle() {
+  const { t } = useI18n()
   const { mode, colors, toggleTheme } = useTheme()
   const styles = useThemedStyles(createStyles)
   const spin = useSharedValue(0)
@@ -26,7 +28,7 @@ export function ThemeToggle() {
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+      accessibilityLabel={t(isDark ? 'theme.toLight' : 'theme.toDark')}
       style={styles.button}
       onPress={() => {
         void Haptics.selectionAsync()

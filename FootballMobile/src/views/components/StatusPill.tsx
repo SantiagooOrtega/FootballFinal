@@ -10,14 +10,7 @@ import Animated, {
 import type { MatchStatus } from '../../models'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
-
-const LABELS: Record<MatchStatus, string> = {
-  scheduled: 'PROGRAMADO',
-  live: 'EN VIVO',
-  finished: 'FINAL',
-  postponed: 'POSPUESTO',
-  cancelled: 'CANCELADO',
-}
+import { useI18n } from '../../i18n/I18nProvider'
 
 function LiveDot() {
   const styles = useThemedStyles(createStyles)
@@ -33,6 +26,7 @@ function LiveDot() {
 }
 
 export function StatusPill({ status }: { status: MatchStatus }) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const live = status === 'live'
@@ -57,7 +51,7 @@ export function StatusPill({ status }: { status: MatchStatus }) {
           status === 'scheduled' && { color: colors.textMuted },
         ]}
       >
-        {LABELS[status]}
+        {t(`status.${status}`)}
       </Text>
     </View>
   )
