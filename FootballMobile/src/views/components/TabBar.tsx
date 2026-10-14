@@ -5,20 +5,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import type { BottomTabBarProps } from 'expo-router/js-tabs'
+import type { TranslationKey } from '../../i18n'
 import { PressableScale } from './PressableScale'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 type IconName = keyof typeof Ionicons.glyphMap
 
-const TABS: Record<string, { label: string; icon: IconName; iconActive: IconName }> = {
-  index: { label: 'Inicio', icon: 'home-outline', iconActive: 'home' },
-  matches: { label: 'Partidos', icon: 'football-outline', iconActive: 'football' },
-  ranking: { label: 'Ranking', icon: 'trophy-outline', iconActive: 'trophy' },
-  profile: { label: 'Perfil', icon: 'person-outline', iconActive: 'person' },
+const TABS: Record<string, { labelKey: TranslationKey; icon: IconName; iconActive: IconName }> = {
+  index: { labelKey: 'tabs.home', icon: 'home-outline', iconActive: 'home' },
+  matches: { labelKey: 'tabs.matches', icon: 'football-outline', iconActive: 'football' },
+  ranking: { labelKey: 'tabs.ranking', icon: 'trophy-outline', iconActive: 'trophy' },
+  profile: { labelKey: 'tabs.profile', icon: 'person-outline', iconActive: 'person' },
 }
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const insets = useSafeAreaInsets()
@@ -60,7 +63,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
                 size={23}
                 color={focused ? colors.primary : colors.textFaint}
               />
-              <Text style={[styles.label, focused && styles.labelActive]}>{tab.label}</Text>
+              <Text style={[styles.label, focused && styles.labelActive]}>{t(tab.labelKey)}</Text>
             </PressableScale>
           )
         })}

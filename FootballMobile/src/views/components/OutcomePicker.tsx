@@ -8,6 +8,7 @@ import { PressableScale } from './PressableScale'
 import { TeamCrest } from './TeamCrest'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 interface OutcomePickerProps {
   match: Match
@@ -60,6 +61,7 @@ function Option({
 }
 
 export function OutcomePicker({ match, value, onChange, disabled }: OutcomePickerProps) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   return (
@@ -72,7 +74,7 @@ export function OutcomePicker({ match, value, onChange, disabled }: OutcomePicke
       >
         <TeamCrest logo={match.homeTeam.logo} name={match.homeTeam.shortName} size={44} />
       </Option>
-      <Option title="Empate" selected={value === 'draw'} disabled={disabled} onPress={() => onChange('draw')}>
+      <Option title={t('outcome.draw')} selected={value === 'draw'} disabled={disabled} onPress={() => onChange('draw')}>
         <View style={styles.drawIcon}>
           <Ionicons name="swap-horizontal" size={22} color={colors.draw} />
         </View>

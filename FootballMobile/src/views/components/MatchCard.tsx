@@ -9,6 +9,7 @@ import { StatusPill } from './StatusPill'
 import { TeamCrest } from './TeamCrest'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 interface MatchCardProps {
   match: Match
@@ -18,6 +19,7 @@ interface MatchCardProps {
 }
 
 export function MatchCard({ match, onPress, index = 0, style }: MatchCardProps) {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const { homeTeam, awayTeam, score, ai, userPick, status } = match
@@ -25,7 +27,7 @@ export function MatchCard({ match, onPress, index = 0, style }: MatchCardProps) 
   const aiText =
     ai.outcome && ai.confidence !== null
       ? `${outcomeLabel(match, ai.outcome)} · ${Math.round(ai.confidence)}%`
-      : 'Análisis pendiente'
+      : t('match.aiPending')
 
   return (
     <Animated.View
@@ -82,7 +84,7 @@ export function MatchCard({ match, onPress, index = 0, style }: MatchCardProps) 
           {userPick ? (
             <View style={styles.pickPill}>
               <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
-              <Text style={styles.pickText}>Tu pronóstico</Text>
+              <Text style={styles.pickText}>{t('match.yourPick')}</Text>
             </View>
           ) : null}
         </View>
