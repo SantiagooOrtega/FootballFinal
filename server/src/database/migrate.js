@@ -89,6 +89,8 @@ const createTables = async () => {
     `);
     console.log('✅ Tabla matches creada');
 
+    await client.query(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS ai_analysis_en TEXT;`);
+
     // ─── Tabla: predictions (predicciones de usuarios) ────────────────────────
     await client.query(`
       CREATE TABLE IF NOT EXISTS predictions (
