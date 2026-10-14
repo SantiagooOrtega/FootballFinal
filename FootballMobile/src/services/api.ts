@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from 'axios'
 import Constants from 'expo-constants'
+import { isTranslationKey, translate, type Language, type TranslationKey } from '../i18n'
 import { readToken } from './session'
 
 const API_PORT = 5001
@@ -16,6 +17,12 @@ function resolveBaseUrl(): string {
 const AUTH_ERROR_CODES = ['TOKEN_EXPIRED', 'INVALID_TOKEN', 'USER_NOT_FOUND', 'ACCOUNT_DISABLED']
 
 let onSessionExpired: (() => void) | null = null
+let apiLanguage: Language = 'es'
+
+/** Idioma enviado al backend para que responda el analisis de la IA en ese idioma. */
+export function setApiLanguage(language: Language) {
+  apiLanguage = language
+}
 
 export function setSessionExpiredHandler(handler: (() => void) | null) {
   onSessionExpired = handler
@@ -30,6 +37,7 @@ export const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const token = await readToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
+  config.headers['Accept-Language'] = apiLanguage
   return config
 })
 
@@ -44,9 +52,16 @@ api.interceptors.response.use(
   },
 )
 
-export function errorMessage(error: unknown, fallback = 'Algo salió mal. Intenta de nuevo.'): string {
-  if (!isAxiosError(error)) return fallback
-  if (!error.response) return 'No se pudo conectar con el servidor. Revisa tu red.'
+export function errorMessage(error: unknown, fallback: TranslationKey = 'error.generic'): string {
+  if (!isAxiosError(error)) return translate(fallback)
+  if (!error.response) return translate('error.network')
+
   const data = error.response.data
-  return data?.details?.[0]?.message ?? data?.error ?? fallback
+  const codeKey = `error.${data?.code}`
+  if (isTranslationKey(codeKey)) return translate(codeKey)
+  if (data?.details?.length) {
+    // Los mensajes de validacion del servidor estan en español
+    return apiLanguage === 'es' ? data.details[0].message : translate('error.validation')
+  }
+  return translate(fallback)
 }

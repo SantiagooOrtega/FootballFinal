@@ -38,7 +38,7 @@ export function useMatch(id: string) {
         resource.setData(match)
         return true
       } catch (err) {
-        setSaveError(errorMessage(err, 'No se pudo guardar el pronóstico.'))
+        setSaveError(errorMessage(err, 'error.savePick'))
         return false
       } finally {
         setSaving(false)
