@@ -12,10 +12,12 @@ import { TextField } from '../../views/components/TextField'
 import { ThemeToggle } from '../../views/components/ThemeToggle'
 import { useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
 
 const DEMO = { email: 'demo@football.com', password: 'password123' }
 
 export default function LoginScreen() {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { login } = useAuth()
   const [email, setEmail] = useState('')
@@ -25,7 +27,7 @@ export default function LoginScreen() {
 
   const submit = async (credentials: { email: string; password: string }) => {
     if (!credentials.email.trim() || !credentials.password) {
-      setError('Ingresa tu correo y tu contraseña.')
+      setError(t('login.missing'))
       return
     }
     setLoading(true)
@@ -33,7 +35,7 @@ export default function LoginScreen() {
     try {
       await login(credentials.email.trim(), credentials.password)
     } catch (err) {
-      setError(errorMessage(err, 'No pudimos iniciar sesión.'))
+      setError(errorMessage(err, 'login.failed'))
       setLoading(false)
     }
   }
@@ -55,16 +57,16 @@ export default function LoginScreen() {
             <Text style={styles.wordmark}>
               Football<Text style={styles.ai}>AI</Text>
             </Text>
-            <Text style={styles.tagline}>Pronósticos de fútbol con inteligencia artificial</Text>
+            <Text style={styles.tagline}>{t('login.tagline')}</Text>
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(150).duration(500)} style={styles.form}>
-            <Text style={styles.title}>Inicia sesión</Text>
+            <Text style={styles.title}>{t('login.title')}</Text>
             <ErrorBanner message={error} />
             <TextField
-              label="Correo electrónico"
+              label={t('login.emailLabel')}
               icon="mail-outline"
-              placeholder="tu@correo.com"
+              placeholder={t('login.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -73,9 +75,9 @@ export default function LoginScreen() {
               autoCorrect={false}
             />
             <TextField
-              label="Contraseña"
+              label={t('login.passwordLabel')}
               icon="lock-closed-outline"
-              placeholder="Tu contraseña"
+              placeholder={t('login.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               secure
@@ -84,9 +86,9 @@ export default function LoginScreen() {
               returnKeyType="go"
             />
             <View style={styles.actions}>
-              <Button label="Entrar" icon="log-in-outline" loading={loading} onPress={() => submit({ email, password })} />
+              <Button label={t('login.submit')} icon="log-in-outline" loading={loading} onPress={() => submit({ email, password })} />
               <Button
-                label="Probar con cuenta demo"
+                label={t('login.demo')}
                 variant="ghost"
                 icon="flash-outline"
                 disabled={loading}
@@ -96,9 +98,9 @@ export default function LoginScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.footer}>
-            <Text style={styles.footerText}>¿Aún no tienes cuenta?</Text>
+            <Text style={styles.footerText}>{t('login.noAccount')}</Text>
             <Link href="/register" style={styles.link}>
-              Regístrate
+              {t('login.register')}
             </Link>
           </Animated.View>
         </ScrollView>

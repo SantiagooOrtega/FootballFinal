@@ -12,6 +12,8 @@ import { TextField } from '../../views/components/TextField'
 import { ThemeToggle } from '../../views/components/ThemeToggle'
 import { useTheme, useThemedStyles } from '../../theme/ThemeProvider'
 import type { Palette } from '../../theme/colors'
+import { useI18n } from '../../i18n/I18nProvider'
+import type { TranslationKey } from '../../i18n'
 
 interface FieldErrors {
   username?: string
@@ -19,17 +21,23 @@ interface FieldErrors {
   password?: string
 }
 
-function validate(username: string, email: string, password: string): FieldErrors {
+function validate(
+  t: (key: TranslationKey) => string,
+  username: string,
+  email: string,
+  password: string,
+): FieldErrors {
   const errors: FieldErrors = {}
-  if (username.length < 3 || username.length > 50) errors.username = 'Entre 3 y 50 caracteres.'
-  else if (!/^[a-zA-Z0-9_]+$/.test(username)) errors.username = 'Solo letras, números y guion bajo.'
-  if (!/^\S+@\S+\.\S+$/.test(email)) errors.email = 'Correo electrónico inválido.'
-  if (password.length < 6) errors.password = 'Mínimo 6 caracteres.'
-  else if (!/\d/.test(password)) errors.password = 'Debe incluir al menos un número.'
+  if (username.length < 3 || username.length > 50) errors.username = t('validation.username.length')
+  else if (!/^[a-zA-Z0-9_]+$/.test(username)) errors.username = t('validation.username.chars')
+  if (!/^\S+@\S+\.\S+$/.test(email)) errors.email = t('validation.email')
+  if (password.length < 6) errors.password = t('validation.password.length')
+  else if (!/\d/.test(password)) errors.password = t('validation.password.number')
   return errors
 }
 
 export default function RegisterScreen() {
+  const { t } = useI18n()
   const styles = useThemedStyles(createStyles)
   const { colors } = useTheme()
   const { register } = useAuth()
@@ -43,7 +51,7 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false)
 
   const submit = async () => {
-    const errors = validate(username.trim(), email.trim(), password)
+    const errors = validate(t, username.trim(), email.trim(), password)
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
 
@@ -57,7 +65,7 @@ export default function RegisterScreen() {
         favorite_team: team.trim() || undefined,
       })
     } catch (err) {
-      setError(errorMessage(err, 'No pudimos crear tu cuenta.'))
+      setError(errorMessage(err, 'register.failed'))
       setLoading(false)
     }
   }
@@ -78,16 +86,16 @@ export default function RegisterScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(80).duration(500)} style={styles.heading}>
-            <Text style={styles.title}>Crea tu cuenta</Text>
-            <Text style={styles.subtitle}>Haz tus pronósticos y compite en el ranking.</Text>
+            <Text style={styles.title}>{t('register.title')}</Text>
+            <Text style={styles.subtitle}>{t('register.subtitle')}</Text>
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(180).duration(500)} style={styles.form}>
             <ErrorBanner message={error} />
             <TextField
-              label="Nombre de usuario"
+              label={t('register.usernameLabel')}
               icon="person-outline"
-              placeholder="tu_usuario"
+              placeholder={t('register.usernamePlaceholder')}
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"
@@ -95,9 +103,9 @@ export default function RegisterScreen() {
               error={fieldErrors.username}
             />
             <TextField
-              label="Correo electrónico"
+              label={t('login.emailLabel')}
               icon="mail-outline"
-              placeholder="tu@correo.com"
+              placeholder={t('login.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -106,16 +114,16 @@ export default function RegisterScreen() {
               error={fieldErrors.email}
             />
             <TextField
-              label="Contraseña"
+              label={t('login.passwordLabel')}
               icon="lock-closed-outline"
-              placeholder="Mínimo 6 caracteres y un número"
+              placeholder={t('register.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               secure
               error={fieldErrors.password}
             />
             <TextField
-              label="Equipo favorito (opcional)"
+              label={t('register.teamLabel')}
               icon="shield-outline"
               placeholder="Real Madrid"
               value={team}
@@ -124,7 +132,7 @@ export default function RegisterScreen() {
               onSubmitEditing={submit}
             />
             <View style={styles.submit}>
-              <Button label="Crear cuenta" icon="checkmark" loading={loading} onPress={submit} />
+              <Button label={t('register.submit')} icon="checkmark" loading={loading} onPress={submit} />
             </View>
           </Animated.View>
         </ScrollView>
