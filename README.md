@@ -2,6 +2,8 @@
 
 App web completa de pronósticos de partidos de fútbol con análisis de Inteligencia Artificial.
 
+🎥 **Video explicativo del proyecto:** [Ver en Google Drive](https://drive.google.com/file/d/1pxXdT_hmIL2pUB-csQV1BUKtLDHwa4OD/view?usp=sharing)
+
 ## Stack
 
 | Capa | Tecnología |
